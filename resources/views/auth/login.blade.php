@@ -375,8 +375,8 @@
     <div class="container">
         <div class="login-card">
             <div class="login-header">
-                <h1><i class="bi bi-box-seam"></i> {{ __('messages.app_name') }}</h1> {{-- Using lang file --}}
-                <p>{{ __('messages.login_subtitle') }}</p> {{-- Using lang file --}}
+                <h1><i class="bi bi-box-seam"></i> {{ __('messages.app_name') }}</h1>
+                <p>{{ __('messages.login_subtitle') }}</p>
             </div>
 
             @if ($errors->any())
@@ -400,16 +400,16 @@
                     <i class="bi bi-envelope input-icon"></i>
                     <input type="email" name="email" id="email" class="form-input"
                         placeholder="{{ __('messages.email_placeholder') }}" value="{{ old('email') }}" required
-                        autofocus> {{-- Using lang file --}}
+                        autofocus> 
                 </div>
                 <div class="form-group">
                     <i class="bi bi-lock input-icon"></i>
                     <input type="password" name="password" id="password" class="form-input"
-                        placeholder="{{ __('messages.password_placeholder') }}" required> {{-- Using lang file --}}
+                        placeholder="{{ __('messages.password_placeholder') }}" required> 
                 </div>
                 <button type="submit" class="login-btn" id="loginButton">
                     <i class="bi bi-box-arrow-in-right"></i>
-                    {{ __('messages.login_button') }} {{-- Using lang file --}}
+                    {{ __('messages.login_button') }}
                     <div class="loading" id="loadingSpinner">
                         <div class="spinner"></div>
                     </div>
@@ -420,30 +420,33 @@
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            let isValid = true;
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
+                let isValid = true;
 
-            if (!emailInput.value || !emailInput.value.includes('@')) {
-                animateError(emailInput);
-                isValid = false;
-            }
-            if (!passwordInput.value) {
-                animateError(passwordInput);
-                isValid = false;
-            }
+                emailInput.style.borderColor = ''; 
+                passwordInput.style.borderColor = ''; 
 
-            if (!isValid) {
-                e.preventDefault();
-                return;
-            }
+                if (!emailInput.value || !emailInput.value.includes('@')) {
+                    animateError(emailInput); 
+                    isValid = false;
+                }
+                if (!passwordInput.value) {
+                    animateError(passwordInput); 
+                    isValid = false;
+                }
 
-            const button = document.getElementById('loginButton');
-            const spinner = document.getElementById('loadingSpinner');
-            button.disabled = true;
-            button.style.pointerEvents = 'none';
-            spinner.style.display = 'inline-block';
-        });
+                if (!isValid) {
+                    e.preventDefault(); 
+                    return; 
+                }
+
+                const button = document.getElementById('loginButton');
+                const spinner = document.getElementById('loadingSpinner');
+                button.disabled = true;
+                button.style.pointerEvents = 'none';
+                spinner.style.display = 'inline-block';
+            });
 
         function animateError(element) {
             element.style.borderColor = '#dc3545';
@@ -498,23 +501,6 @@
             this.style.transform = 'translateY(0) scale(1)';
 
             this.style.boxShadow = '0 8px 32px 0 rgba(67, 56, 202, 0.15)';
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const activeElement = document.activeElement;
-                const loginForm = document.getElementById('loginForm');
-
-                if (activeElement && activeElement.tagName === 'INPUT' && loginForm.contains(activeElement)) {
-                    const loginButton = document.getElementById('loginButton');
-                    if (!loginButton.disabled) {
-                        loginForm.dispatchEvent(new Event('submit', {
-                            cancelable: true,
-                            bubbles: true
-                        }));
-                    }
-                }
-            }
         });
     </script>
 </body>

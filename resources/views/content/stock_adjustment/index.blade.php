@@ -16,7 +16,7 @@
 
         <div class="filter-section">
             <div class="filter-card">
-                <form action="{{ route('stock_adjustments.index') }}" method="GET">
+                <form action="{{ route('stock_adjustments') }}" method="GET">
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label for="search_raw_material" class="form-label small">Nama Bahan Baku</label>
@@ -46,7 +46,7 @@
                         <div class="col-md-2 align-self-end">
                             <div class="d-flex gap-2">
                                 <button class="btn btn-primary flex-fill" type="submit"><i class="fas fa-filter me-1"></i></button>
-                                <a href="{{ route('stock_adjustments.index') }}" class="btn btn-outline-secondary flex-fill"><i class="fas fa-undo me-1"></i></a>
+                                <a href="{{ route('stock_adjustments') }}" class="btn btn-outline-secondary flex-fill"><i class="fas fa-undo me-1"></i></a>
                             </div>
                         </div>
                     </div>

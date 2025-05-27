@@ -7,7 +7,7 @@
         <div class="dashboard-header">
             <div class="container">
                 <h1 class="dashboard-title">Welcome to StockHub</h1>
-                <p class="dashboard-subtitle">Your central command center for managing the cafe.</p>
+                <p class="dashboard-subtitle">Your central command center for managing the cafe inventory.</p>
             </div>
         </div>
 

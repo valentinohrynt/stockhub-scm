@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\BillOfMaterialController;
 use App\Http\Controllers\JitNotificationController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\StockAdjustmentController;
 
 Route::get('/', function () {
     return redirect()->route('home');
@@ -25,9 +26,9 @@ Route::middleware('auth')->group(function () {
     // Admin & Supervisor: Full access
     // Staff: Full POS access
     Route::middleware('role:admin,supervisor,staff')->group(function () {
-        Route::get('/stock-adjustments/create', [App\Http\Controllers\StockAdjustmentController::class, 'create'])->name('stock_adjustments.create');
-        Route::post('/stock-adjustments', [App\Http\Controllers\StockAdjustmentController::class, 'store'])->name('stock_adjustments.store');
-        Route::get('/stock-adjustments', [App\Http\Controllers\StockAdjustmentController::class, 'index'])->name('stock_adjustments.index'); 
+        Route::get('/stock-adjustments/create', [StockAdjustmentController::class, 'create'])->name('stock_adjustments.create');
+        Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('stock_adjustments.store');
+        Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index'])->name('stock_adjustments'); 
     });
 
     // Admin & Supervisor: Full access

@@ -21,8 +21,8 @@
                                     <div class="dashboard-card-icon" style="--icon-bg: #FFF7ED; --icon-color: #F97316;">
                                         <i class="fas fa-exchange-alt"></i>
                                     </div>
-                                    <h5 class="dashboard-card-title">Penyesuaian Stok</h5>
-                                    <p class="dashboard-card-text">Catat penambahan atau pengurangan stok secara manual.</p>
+                                    <h5 class="dashboard-card-title">Stock Adjustment</h5>
+                                    <p class="dashboard-card-text">Manually record stock increases or decreases.</p>
                                 </div>
                             </a>
                         </div>

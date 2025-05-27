@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="id"> {{-- Changed lang to id --}}
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('messages.login_title') }}</title> {{-- Using lang file --}}
+    <title>{{ __('messages.login_title') }}</title> 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        /* ... (existing styles remain the same) ... */
         * {
             margin: 0;
             padding: 0;
@@ -502,13 +501,16 @@
         });
 
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && (document.activeElement.tagName === 'INPUT' || document.activeElement
-                    .tagName === 'BUTTON')) {
-                if (document.getElementById('loginForm').contains(document.activeElement)) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                const loginForm = document.getElementById('loginForm');
+
+                if (activeElement && activeElement.tagName === 'INPUT' && loginForm.contains(activeElement)) {
                     const loginButton = document.getElementById('loginButton');
                     if (!loginButton.disabled) {
-                        document.getElementById('loginForm').dispatchEvent(new Event('submit', {
-                            cancelable: true
+                        loginForm.dispatchEvent(new Event('submit', {
+                            cancelable: true,
+                            bubbles: true
                         }));
                     }
                 }

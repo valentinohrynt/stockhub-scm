@@ -11,9 +11,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use App\Services\InventoryAnalyticsService;
 
 class StockAdjustmentController extends Controller
 {
+    protected InventoryAnalyticsService $inventoryAnalyticsService;
+
+    public function __construct(InventoryAnalyticsService $inventoryAnalyticsService)
+    {
+        $this->inventoryAnalyticsService = $inventoryAnalyticsService;
+    }
+
     public function create()
     {
         $rawMaterials = RawMaterial::where('is_active', true)->orderBy('name')->get();
@@ -25,7 +33,7 @@ class StockAdjustmentController extends Controller
         $validatedData = $request->validate([
             'raw_material_id' => 'required|exists:raw_materials,id',
             'quantity' => 'required|integer|min:1',
-            'type' => 'required|in:addition,deduction',
+            'type' => 'required|in:addition,deduction,initial_stock,correction,production_usage,breakage,transfer_out,transfer_in,manual_adjustment', // Pastikan tipe ini ada di enum migration
             'notes' => 'nullable|string|max:1000',
             'movement_date' => 'required|date',
         ]);
@@ -39,14 +47,18 @@ class StockAdjustmentController extends Controller
                 $currentStock = $rawMaterial->stock;
                 $newStock = $currentStock;
 
-                if ($type === 'addition') {
-                    $newStock += $quantity;
-                } elseif ($type === 'deduction') {
-                    if ($currentStock < $quantity) {
-                        throw new \Exception("Stok tidak mencukupi untuk bahan baku '{$rawMaterial->name}'. Stok saat ini: {$currentStock}, dibutuhkan: {$quantity}.");
+                if ($type === 'addition' || $type === 'initial_stock' || $type === 'transfer_in' || ($type === 'correction' && $quantity > 0) || ($type === 'manual_adjustment' && $quantity > 0) ) {
+                    $newStock += abs($quantity);
+                } elseif ($type === 'deduction' || $type === 'production_usage' || $type === 'breakage' || $type === 'transfer_out' || ($type === 'correction' && $quantity < 0) || ($type === 'manual_adjustment' && $quantity < 0)) {
+                    $absQuantity = abs($quantity);
+                    if ($currentStock < $absQuantity) {
+                        throw new \Exception("Stok tidak mencukupi untuk bahan baku '{$rawMaterial->name}'. Stok saat ini: {$currentStock}, dibutuhkan: {$absQuantity}.");
                     }
-                    $newStock -= $quantity;
+                    $newStock -= $absQuantity;
+                } else {
+
                 }
+
 
                 $rawMaterial->stock = $newStock;
                 $rawMaterial->save();
@@ -60,54 +72,70 @@ class StockAdjustmentController extends Controller
                     'notes' => $validatedData['notes'],
                     'movement_date' => $validatedData['movement_date'],
                 ]);
-
-                if ($type === 'deduction') {
-                    $this->checkJitSignalForMaterial($rawMaterial->fresh());
-                }
             });
 
-            return redirect()->route('stock_adjustments.create')->with('success', 'Penyesuaian stok berhasil disimpan.');
+            $analyticsMessage = $this->inventoryAnalyticsService->runCalculations();
+            Log::info("Inventory analytics recalculated after stock adjustment for material ID {$rawMaterial->id}. Result: {$analyticsMessage}");
+
+            $updatedRawMaterial = $rawMaterial->fresh();
+
+            $this->checkJitSignalForMaterial($updatedRawMaterial);
+
+            return redirect()->route('stock_adjustments.create')
+                             ->with('success', "Penyesuaian stok berhasil disimpan. " . $analyticsMessage);
 
         } catch (\Exception $e) {
-            Log::error("Error during stock adjustment: " . $e->getMessage());
+            Log::error("Error during stock adjustment or analytics recalculation: " . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Gagal menyimpan penyesuaian stok: ' . $e->getMessage());
         }
     }
 
     private function checkJitSignalForMaterial(RawMaterial $material): void
     {
-        $flaskApiUrl = env('FLASK_API_URL', 'https://cafehub-forecast-api.vercel.app');
+        if (is_null($material->signal_point) || is_null($material->replenish_quantity) || $material->signal_point <= 0) {
+            Log::info("JIT signal check skipped for {$material->name} due to invalid JIT parameters (signal_point: {$material->signal_point}, replenish_quantity: {$material->replenish_quantity}).");
+            return;
+        }
 
-        try {
-            $payload = [
-                'product_name' => $material->name,
-                'current_stock' => $material->stock,
-                'signal_point' => $material->signal_point,
-                'replenish_quantity' => $material->replenish_quantity,
-            ];
+        if ($material->stock <= $material->signal_point) {
+            $flaskApiUrl = env('FLASK_API_URL', 'https://cafehub-forecast-api.vercel.app');
 
-            $response = Http::timeout(10)->post("{$flaskApiUrl}/jit-signal-event", $payload);
+            try {
+                $payload = [
+                    'product_name' => $material->name,
+                    'current_stock' => $material->stock,
+                    'signal_point' => $material->signal_point,
+                    'replenish_quantity' => $material->replenish_quantity,
+                ];
 
-            if ($response->successful()) {
-                $data = $response->json();
+                $response = Http::timeout(10)->post("{$flaskApiUrl}/jit-signal-event", $payload);
 
-                if (isset($data['action_required']) && $data['action_required'] === 'INITIATE_JIT_REPLENISHMENT') {
-                    JitNotification::firstOrCreate(
-                        [
-                            'raw_material_id' => $material->id,
-                            'status' => 'unread',
-                        ],
-                        [
-                            'message' => "Stok {$material->name} mencapai titik kritis ({$material->stock} dari target {$material->signal_point}). Segera lakukan pemesanan ulang sebanyak {$material->replenish_quantity} unit.",
-                        ]
-                    );
-                    Log::info("JIT Notification triggered for {$material->name} due to manual stock deduction.");
+                if ($response->successful()) {
+                    $data = $response->json();
+                    
+                    if (isset($data['action_required']) && $data['action_required'] === 'INITIATE_JIT_REPLENISHMENT') {
+                        $existingNotification = JitNotification::where('raw_material_id', $material->id)
+                                                              ->where('status', 'unread')
+                                                              ->first();
+                        if (!$existingNotification) {
+                            JitNotification::create([
+                                'raw_material_id' => $material->id,
+                                'message' => "Stok {$material->name} mencapai titik kritis ({$material->stock} dari target {$material->signal_point}). Segera lakukan pemesanan ulang sebanyak {$material->replenish_quantity} unit.",
+                                'status' => 'unread',
+                            ]);
+                            Log::info("JIT Notification triggered for {$material->name} after stock adjustment. Stock: {$material->stock}, Signal: {$material->signal_point}");
+                        } else {
+                            Log::info("JIT Notification for {$material->name} already exists and is unread. No new notification created.");
+                        }
+                    }
+                } else {
+                    Log::error("JIT API call failed for material ID {$material->id} after stock adjustment. Status: {$response->status()}, Body: " . $response->body());
                 }
-            } else {
-                Log::error("JIT API call failed for material ID {$material->id} after manual deduction. Status: {$response->status()}, Body: " . $response->body());
+            } catch (Exception $e) {
+                Log::error("Exception during JIT API call for material ID {$material->id} after stock adjustment: " . $e->getMessage());
             }
-        } catch (Exception $e) {
-            Log::error("Exception during JIT API call for material ID {$material->id} after manual deduction: " . $e->getMessage());
+        } else {
+            Log::info("JIT signal not triggered for {$material->name}. Stock ({$material->stock}) is above signal point ({$material->signal_point}).");
         }
     }
 

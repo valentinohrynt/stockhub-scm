@@ -71,7 +71,9 @@
                         class="form-control @error('stock') is-invalid @enderror"
                         value="{{ old('stock', $isEdit ? $rawMaterial->stock : 0) }}" required>
                     <div class="form-text">
-                        {{ __('messages.current_stock_in_unit_info', ['unit' => '<strong id="displayStockUnit1">' . old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')) . '</strong>']) }}
+                        {!! __('messages.current_stock_in_unit_info_form', [
+                            'unit' => old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')),
+                        ]) !!}
                     </div>
                     @error('stock')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -101,7 +103,9 @@
                             value="{{ old('unit_price', $isEdit ? $rawMaterial->unit_price : '') }}" required>
                     </div>
                     <div class="form-text">
-                        {{ __('messages.unit_price_info', ['stock_unit' => '<strong id="displayStockUnit2">' . old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')) . '</strong>']) }}
+                        {!! __('messages.unit_price_info_form', [
+                            'stock_unit' => old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')),
+                        ]) !!}
                     </div>
                     @error('unit_price')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -129,16 +133,10 @@
                         value="{{ old('conversion_factor', $isEdit ? $rawMaterial->conversion_factor : '') }}"
                         required>
                     <div class="form-text">
-                        {{ __('messages.conversion_factor_info', [
-                            'usage_unit' =>
-                                '<strong id="displayUsageUnit">' .
-                                old('usage_unit', $isEdit ? $rawMaterial->usage_unit : __('messages.usage_unit')) .
-                                '</strong>',
-                            'stock_unit' =>
-                                '<strong id="displayStockUnit3">' .
-                                old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')) .
-                                '</strong>',
-                        ]) }}
+                        {!! __('messages.conversion_factor_info_form', [
+                            'usage_unit' => old('usage_unit', $isEdit ? $rawMaterial->usage_unit : __('messages.usage_unit')),
+                            'stock_unit' => old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')),
+                        ]) !!}
                     </div>
                     @error('conversion_factor')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -219,11 +217,8 @@
                     <input type="number" name="replenish_quantity" id="replenish_quantity" min="1"
                         class="form-control @error('replenish_quantity') is-invalid @enderror"
                         value="{{ old('replenish_quantity', $isEdit ? $rawMaterial->replenish_quantity ?? 1 : 1) }}">
-                    <div class="form-text">{!! __('messages.units_per_order_in_stock_unit', [
-                        'unit' =>
-                            '<strong id="displayStockUnit4">' .
-                            old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')) .
-                            '</strong>',
+                    <div class="form-text">{!! __('messages.units_per_order_in_stock_unit_form', [
+                        'unit' => old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')),
                     ]) !!}
                     </div>
                     @error('replenish_quantity')
@@ -233,11 +228,8 @@
             </div>
             <div class="row g-3 mt-1">
                 <div class="col-md-6 col-lg-3">
-                    <label for="safety_stock" class="form-label">{!! __('messages.safety_stock_auto_in_stock_unit', [
-                        'unit' =>
-                            '<strong id="displayStockUnit5">' .
-                            old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')) .
-                            '</strong>',
+                    <label for="safety_stock" class="form-label">{!! __('messages.safety_stock_auto_in_stock_unit_form', [
+                        'unit' => old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')),
                     ]) !!}</label>
                     <input type="number" step="any" name="safety_stock" id="safety_stock" class="form-control"
                         value="{{ old('safety_stock', $isEdit ? $rawMaterial->safety_stock ?? 0 : 0) }}" disabled
@@ -245,11 +237,8 @@
                     <div class="form-text">{{ __('messages.avg_usage_x_safety_days') }}</div>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <label for="signal_point" class="form-label">{!! __('messages.signal_point_auto_in_stock_unit', [
-                        'unit' =>
-                            '<strong id="displayStockUnit6">' .
-                            old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')) .
-                            '</strong>',
+                    <label for="signal_point" class="form-label">{!! __('messages.signal_point_auto_in_stock_unit_form', [
+                        'unit' => old('stock_unit', $isEdit ? $rawMaterial->stock_unit : __('messages.stock_unit')),
                     ]) !!}</label>
                     <input type="number" step="any" name="signal_point" id="signal_point" class="form-control"
                         value="{{ old('signal_point', $isEdit ? $rawMaterial->signal_point ?? 0 : 0) }}" disabled
@@ -297,16 +286,12 @@
                         }
                         reader.readAsDataURL(event.target.files[0]);
                     } else {
-                        // This part handles if the user cancels file selection - it might need adjustment based on exact desired behavior
-                        if (!imagePreview.dataset.defaultSrc) { // Store original src if not already done
+                        if (!imagePreview.dataset.defaultSrc) {
                             imagePreview.dataset.defaultSrc = imagePreview.src;
                         }
-                        if (!imageInput
-                            .value) { // If input is cleared (some browsers might not trigger change for this)
-                            imagePreview.src = imagePreview.dataset.defaultSrc ||
-                            ''; // Revert to original or empty
-                            if (imagePreview.src && imagePreview.src !== window.location
-                                .href) { // If there was an initial image
+                        if (!imageInput.value) {
+                            imagePreview.src = imagePreview.dataset.defaultSrc || '';
+                            if (imagePreview.src && imagePreview.src !== window.location.href) {
                                 imagePreview.classList.add('active');
                                 placeholderContent.style.display = 'none';
                             } else {
@@ -316,9 +301,7 @@
                         }
                     }
                 });
-                // Initial check in case there's already an image (e.g., on edit form)
-                if (imagePreview.src && imagePreview.src !== window.location
-                    .href) { // window.location.href is a trick if src is empty
+                if (imagePreview.src && imagePreview.src !== window.location.href && imagePreview.src !== '') {
                     imagePreview.classList.add('active');
                     placeholderContent.style.display = 'none';
                 } else {
@@ -329,30 +312,31 @@
 
             const stockUnitInput = document.getElementById('stock_unit_input');
             const usageUnitInput = document.getElementById('usage_unit_input');
-            const displayStockUnits = [
-                document.getElementById('displayStockUnit1'),
-                document.getElementById('displayStockUnit2'),
-                document.getElementById('displayStockUnit3'),
-                document.getElementById('displayStockUnit4'),
-                document.getElementById('displayStockUnit5'),
-                document.getElementById('displayStockUnit6')
-            ].filter(el => el !== null); // Filter out nulls in case some IDs are not present
+
+            const displayStockUnit1 = document.getElementById('displayStockUnit1');
+            const displayStockUnit2 = document.getElementById('displayStockUnit2');
+            const displayStockUnit3 = document.getElementById('displayStockUnit3');
+            const displayStockUnit4 = document.getElementById('displayStockUnit4');
+            const displayStockUnit5 = document.getElementById('displayStockUnit5');
+            const displayStockUnit6 = document.getElementById('displayStockUnit6');
             const displayUsageUnit = document.getElementById('displayUsageUnit');
 
             function updateUnitDisplays() {
                 const stockUnitValue = stockUnitInput.value || '{{ __('messages.stock_unit') }}';
                 const usageUnitValue = usageUnitInput.value || '{{ __('messages.usage_unit') }}';
 
-                displayStockUnits.forEach(el => {
-                    if (el) el.textContent = stockUnitValue;
-                });
+                if (displayStockUnit1) displayStockUnit1.textContent = stockUnitValue;
+                if (displayStockUnit2) displayStockUnit2.textContent = stockUnitValue;
+                if (displayStockUnit3) displayStockUnit3.textContent = stockUnitValue;
+                if (displayStockUnit4) displayStockUnit4.textContent = stockUnitValue;
+                if (displayStockUnit5) displayStockUnit5.textContent = stockUnitValue;
+                if (displayStockUnit6) displayStockUnit6.textContent = stockUnitValue;
                 if (displayUsageUnit) displayUsageUnit.textContent = usageUnitValue;
             }
 
             if (stockUnitInput) stockUnitInput.addEventListener('input', updateUnitDisplays);
             if (usageUnitInput) usageUnitInput.addEventListener('input', updateUnitDisplays);
 
-            // Initial call to set texts
             updateUnitDisplays();
         });
     </script>

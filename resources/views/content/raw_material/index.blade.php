@@ -92,13 +92,6 @@
                         @foreach ($rawMaterials as $raw)
                             <div class="col-md-6 col-lg-4">
                                 <div class="product-card shadow-sm h-100">
-                                    @if ($raw->image_path)
-                                        <img src="{{ Storage::url($raw->image_path) }}" class="card-img-top"
-                                            alt="{{ $raw->name }}">
-                                    @else
-                                        <div class="card-img-top-placeholder"><i class="fas fa-boxes"></i></div>
-                                    @endif
-
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <h5 class="card-title mb-0" title="{{ $raw->name }}">
@@ -134,11 +127,11 @@
                                                 </span>
                                             </div>
                                             <div>
-                                                <span
-                                                    class="info-label">{{ Str::title(__('messages.signal_point_auto_in_stock_unit', ['unit' => ''])) }}</span>
-                                                <span
-                                                    class="info-value">{{ number_format($raw->signal_point ?? 0, 2, ',', '.') }}
-                                                    {{ $raw->stock_unit }}</span>
+                                                <span class="info-label">{!! __('messages.raw_material_signal_point_calculated_show') !!}</span>
+                                                <span class="info-value">
+                                                    {{ number_format($raw->signal_point ?? 0, 2, ',', '.') }}
+                                                    {{ $raw->stock_unit }}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

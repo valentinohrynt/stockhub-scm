@@ -103,10 +103,9 @@
 
                     <div class="col-lg-5">
                         <div class="content-block mb-4">
-                            <h5 class="content-block-title">{!! __('messages.inventory_management_jit') .
-                                ' (' .
-                                __('messages.quantity_in_unit_label', ['unit_label' => $rawMaterial->stock_unit]) .
-                                ')' !!}</h5>
+                            <h5 class="content-block-title">{!! __('messages.inventory_management_jit') !!}
+                                ({{ __('messages.quantity_in_unit_label', ['unit_label' => 'Kuantitas ' . $rawMaterial->stock_unit]) }})
+                            </h5>
                             <ul class="info-list info-list-dense">
                                 <li>
                                     <span class="label">{{ __('messages.current_stock') }}</span>
@@ -128,12 +127,15 @@
                                         class="value">{{ __('messages.raw_material_conversion_info', ['stock_unit' => $rawMaterial->stock_unit, 'factor' => number_format($rawMaterial->conversion_factor, 2, ',', '.'), 'usage_unit' => $rawMaterial->usage_unit]) }}</span>
                                 </li>
                                 <li>
-                                    <span class="label">{{ __('messages.raw_material_avg_daily_usage') }}</span>
-                                    <span class="value">{!! __('messages.raw_material_avg_daily_usage_calculated_in_unit', ['unit' => $rawMaterial->stock_unit]) !!}</span>
+                                    <span class="label">{!! __('messages.raw_material_avg_daily_usage_calculated_show') !!}</span>
+                                    <span class="value">{{ number_format($rawMaterial->average_daily_usage ?? 0, 2) }}
+                                        {{ $rawMaterial->stock_unit }}
+                                    </span>
                                 </li>
                                 <li>
-                                    <span class="label">{{ __('messages.raw_material_replenish_quantity') }}</span>
-                                    <span class="value">{!! __('messages.raw_material_replenish_quantity_in_unit', ['unit' => $rawMaterial->stock_unit]) !!}</span>
+                                    <span class="label">{{ __('messages.raw_material_replenish_quantity_show') }}</span>
+                                    <span class="value">{{ number_format($rawMaterial->replenish_quantity ?? 0) }}
+                                        {{ $rawMaterial->stock_unit }}</span>
                                 </li>
                                 <li>
                                     <span class="label">{{ __('messages.raw_material_lead_time_policy') }}</span>
@@ -146,12 +148,12 @@
                                         {{ Str::lower(__('messages.lead_time_days')) }}</span>
                                 </li>
                                 <li>
-                                    <span class="label">{!! __('messages.raw_material_safety_stock_calculated') !!}</span>
+                                    <span class="label">{!! __('messages.raw_material_safety_stock_calculated_show') !!}</span>
                                     <span class="value">{{ number_format($rawMaterial->safety_stock ?? 0, 2, ',', '.') }}
                                         {{ $rawMaterial->stock_unit }}</span>
                                 </li>
                                 <li>
-                                    <span class="label">{!! __('messages.raw_material_signal_point_calculated') !!}</span>
+                                    <span class="label">{!! __('messages.raw_material_signal_point_calculated_show') !!}</span>
                                     <span
                                         class="value fw-bold">{{ number_format($rawMaterial->signal_point ?? 0, 2, ',', '.') }}
                                         {{ $rawMaterial->stock_unit }}</span>

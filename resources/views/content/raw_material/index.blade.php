@@ -94,7 +94,7 @@
                                 <div class="product-card shadow-sm h-100">
                                     @if ($raw->image_path)
                                         <img src="{{ Storage::url($raw->image_path) }}" class="card-img-top"
-                                            alt="{{ $eaw->name }}">
+                                            alt="{{ $raw->name }}">
                                     @else
                                         <div class="card-img-top-placeholder">
                                             <i class="fas fa-box-open"></i>

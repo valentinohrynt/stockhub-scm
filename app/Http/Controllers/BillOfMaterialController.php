@@ -3,185 +3,219 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\Supplier;
 use App\Models\Category;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use App\Models\BillOfMaterial;
+use Illuminate\Support\Facades\DB;
 
 class BillOfMaterialController extends Controller
 {
     public function index(Request $request)
     {
-        $queryBuilder = BillOfMaterial::query()
-            ->select('product_id')
-            ->with('product.category')
-            ->groupBy('product_id');
+        $query = Product::query()
+            ->whereHas('billOfMaterial')
+            ->with(['category', 'billOfMaterial' => function($q) {
+                $q->where('is_active', true);
+            }]);
 
-        $currentStatusForView = '1'; 
+        $currentStatusForView = $request->input('status', '1');
 
-        $queryBuilder->whereHas('product', function ($q) use ($request) {
-            if ($request->filled('search')) {
-                $q->where('name', 'LIKE', '%' . $request->input('search') . '%');
-            }
-            if ($request->filled('category')) {
-                $q->where('category_id', $request->input('category'));
-            }
-        });
-
-        if (!$request->has('status')) {
-            $queryBuilder->where('is_active', true);
-        } else {
-            $statusParamValue = $request->input('status');
-            if ($statusParamValue === 'all') {
-                $currentStatusForView = 'all';
-            } elseif ($statusParamValue === '0' || $statusParamValue === '1') {
-                $queryBuilder->where('is_active', $statusParamValue === '1');
-                $currentStatusForView = $statusParamValue;
-            } else {
-                $queryBuilder->where('is_active', true);
-            }
+        if ($request->filled('search')) {
+            $query->where('name', 'LIKE', '%' . $request->input('search') . '%');
         }
-        
-        $billOfMaterials = $queryBuilder->latest('id')->paginate(50)->withQueryString();
-        
-        foreach ($billOfMaterials as $bomGroup) {
-            $details = BillOfMaterial::where('product_id', $bomGroup->product_id)
-                                     ->with('rawMaterial')
-                                     ->get();
-            $bomGroup->base_price = $details->sum('total_cost');
-            
-            if ($details->isNotEmpty()) {
-                $bomGroup->is_active = $details->first()->is_active;
-            } else {
-                $bomGroup->is_active = null; 
-            }
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->input('category'));
+        }
+        if ($currentStatusForView !== 'all') {
+            $query->where('is_active', (bool)$currentStatusForView);
+        }
 
+        $productsWithBOM = $query->latest('products.created_at')->paginate(18)->withQueryString();
+
+        foreach ($productsWithBOM as $product) {
             $possibleUnits = PHP_INT_MAX;
-            if ($details->isEmpty()) {
+            $activeBOMItems = $product->billOfMaterial->where('is_active', true);
+
+            if ($activeBOMItems->isEmpty()) {
                 $possibleUnits = 0;
             } else {
-                foreach ($details as $detail) {
-                    $available = $detail->rawMaterial->stock ?? 0;
-                    $required = $detail->quantity;
-                    if ($required > 0) {
-                        $possibleUnits = min($possibleUnits, floor($available / $required));
+                foreach ($activeBOMItems as $bomItem) {
+                    if ($bomItem->rawMaterial && $bomItem->rawMaterial->conversion_factor > 0) {
+                        $availableStockInUsageUnit = ($bomItem->rawMaterial->stock ?? 0) * $bomItem->rawMaterial->conversion_factor;
+                        $requiredQtyInUsageUnit = $bomItem->quantity;
+                        if ($requiredQtyInUsageUnit > 0) {
+                            $possibleUnits = min($possibleUnits, floor($availableStockInUsageUnit / $requiredQtyInUsageUnit));
+                        } else {
+                             $possibleUnits = 0;
+                             break;
+                        }
+                    } else {
+                         $possibleUnits = 0;
+                         break;
                     }
                 }
             }
-            $bomGroup->possible_units = $possibleUnits === PHP_INT_MAX ? 0 : $possibleUnits;
+            $product->possible_units = ($possibleUnits === PHP_INT_MAX) ? 0 : $possibleUnits;
         }
-
-        $categories = Category::where('type', 'product')->get();
-
+        $categories = Category::where('type', 'product')->orderBy('name')->get();
         return view('content.bill_of_material.index', [
-            'billOfMaterials' => $billOfMaterials,
+            'productsWithBOM' => $productsWithBOM,
             'categories' => $categories,
             'currentStatus' => $currentStatusForView
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $products = Product::where('is_active', true)->get();
-        $rawMaterials = RawMaterial::where('is_active', true)->get();
+        $products = Product::where('is_active', true)
+                            ->whereDoesntHave('billOfMaterial', function($q) {
+                                $q->where('is_active', true); 
+                            })
+                            ->orderBy('name')->get();
+        $rawMaterials = RawMaterial::where('is_active', true)->orderBy('name')->get();
+        $selectedProductId = $request->query('product_id');
 
-        return view('content.bill_of_material.create', compact('products', 'rawMaterials'));
+        return view('content.bill_of_material.create', compact('products', 'rawMaterials', 'selectedProductId'));
     }
 
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'product_id' => 'required|exists:products,id',
+            'product_id' => 'required|exists:products,id|unique:bill_of_materials,product_id,NULL,id,is_active,1',
             'raw_materials' => 'required|array|min:1',
-            'raw_materials.*' => 'required|exists:raw_materials,id',
-            'quantities' => 'required|array|min:1',
-            'quantities.*' => 'required|integer|min:1',
+            'raw_materials.*.id' => 'required|exists:raw_materials,id',
+            'raw_materials.*.quantity' => 'required|numeric|gt:0',
+        ], [
+            'product_id.unique' => 'A Bill of Material already exists and is active for this product. Please edit the existing one or deactivate it first.'
         ]);
 
-        BillOfMaterial::where('product_id', $validatedData['product_id'])->delete();
+        DB::beginTransaction();
+        try {
+            $totalBasePriceForProduct = 0;
+            foreach ($validatedData['raw_materials'] as $materialData) {
+                $rawMaterial = RawMaterial::findOrFail($materialData['id']);
+                $quantityInUsageUnit = (float)$materialData['quantity'];
 
-        foreach ($validatedData['raw_materials'] as $index => $rawMaterialId) {
-            $quantity = $validatedData['quantities'][$index];
-            $unitPrice = RawMaterial::findOrFail($rawMaterialId)->unit_price;
+                if (!$rawMaterial->conversion_factor || $rawMaterial->conversion_factor <= 0) {
+                    throw new \Exception("Conversion factor for {$rawMaterial->name} is invalid.");
+                }
+                if ($rawMaterial->unit_price === null) {
+                    throw new \Exception("Unit price for {$rawMaterial->name} is not set.");
+                }
+                $quantityInStockUnit = $quantityInUsageUnit / $rawMaterial->conversion_factor;
+                $itemCost = $quantityInStockUnit * $rawMaterial->unit_price;
 
-            BillOfMaterial::create([
-                'product_id' => $validatedData['product_id'],
-                'raw_material_id' => $rawMaterialId,
-                'quantity' => $quantity,
-                'total_cost' => $unitPrice * $quantity,
-                'is_active' => true,
-            ]);
+                BillOfMaterial::create([
+                    'product_id' => $validatedData['product_id'],
+                    'raw_material_id' => $rawMaterial->id,
+                    'quantity' => $quantityInUsageUnit,
+                    'total_cost' => $itemCost,
+                    'is_active' => true,
+                ]);
+                $totalBasePriceForProduct += $itemCost;
+            }
+            $product = Product::findOrFail($validatedData['product_id']);
+            $product->base_price = $totalBasePriceForProduct;
+            $product->save();
+            DB::commit();
+            return redirect()->route('bill_of_materials')->with('success', 'Bill of Material created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'Failed to create BoM: ' . $e->getMessage());
         }
-
-        return redirect()->route('bill_of_materials')->with('success', 'Bill of Material created successfully.');
     }
 
     public function edit($productSlug)
     {
         $product = Product::where('slug', $productSlug)->firstOrFail();
+        $billOfMaterial = BillOfMaterial::where('product_id', $product->id)
+                                        ->with('rawMaterial')
+                                        ->get();
+        if($billOfMaterial->isEmpty()){
+             return redirect()->route('bill_of_materials.create', ['product_id' => $product->id])->with('info', 'No active BoM found for this product. You can create one.');
+        }
 
-        $billOfMaterial = BillOfMaterial::with('rawMaterial')
-            ->where('product_id', $product->id)
-            ->get();
-
-        $products = Product::where('is_active',true)->get();
-        $rawMaterials = RawMaterial::where('is_active', true)->get();
-
-        return view('content.bill_of_material.edit', compact('billOfMaterial', 'product', 'products', 'rawMaterials'));
+        $allProducts = Product::where('is_active', true)->orderBy('name')->get();
+        $rawMaterials = RawMaterial::where('is_active', true)->orderBy('name')->get();
+        return view('content.bill_of_material.edit', compact('product', 'billOfMaterial', 'allProducts', 'rawMaterials'));
     }
 
     public function update(Request $request, $productSlug)
     {
+        $product = Product::where('slug', $productSlug)->firstOrFail();
         $validatedData = $request->validate([
-            'product_id' => 'required|exists:products,id',
             'raw_materials' => 'required|array|min:1',
-            'raw_materials.*' => 'required|exists:raw_materials,id',
-            'quantities' => 'required|array|min:1',
-            'quantities.*' => 'required|integer|min:1',
+            'raw_materials.*.id' => 'required|exists:raw_materials,id',
+            'raw_materials.*.quantity' => 'required|numeric|gt:0',
         ]);
 
-        $product = Product::findOrFail($validatedData['product_id']);
+        DB::beginTransaction();
+        try {
+            BillOfMaterial::where('product_id', $product->id)->update(['is_active' => false]);
+            $totalBasePriceForProduct = 0;
 
-        BillOfMaterial::where('product_id', $product->id)->delete();
+            foreach ($validatedData['raw_materials'] as $materialData) {
+                $rawMaterial = RawMaterial::findOrFail($materialData['id']);
+                $quantityInUsageUnit = (float)$materialData['quantity'];
 
-        foreach ($validatedData['raw_materials'] as $index => $rawMaterialId) {
-            $quantity = $validatedData['quantities'][$index];
-            $unitPrice = RawMaterial::findOrFail($rawMaterialId)->unit_price;
+                if (!$rawMaterial->conversion_factor || $rawMaterial->conversion_factor <= 0) {
+                    throw new \Exception("Conversion factor for {$rawMaterial->name} is invalid.");
+                }
+                if ($rawMaterial->unit_price === null) {
+                    throw new \Exception("Unit price for {$rawMaterial->name} is not set.");
+                }
+                $quantityInStockUnit = $quantityInUsageUnit / $rawMaterial->conversion_factor;
+                $itemCost = $quantityInStockUnit * $rawMaterial->unit_price;
 
-            BillOfMaterial::create([
-                'product_id' => $product->id,
-                'raw_material_id' => $rawMaterialId,
-                'quantity' => $quantity,
-                'total_cost' => $unitPrice * $quantity,
-                'is_active' => true,
-            ]);
+                BillOfMaterial::updateOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'raw_material_id' => $rawMaterial->id,
+                    ],
+                    [
+                        'quantity' => $quantityInUsageUnit,
+                        'total_cost' => $itemCost,
+                        'is_active' => true,
+                    ]
+                );
+                $totalBasePriceForProduct += $itemCost;
+            }
+            $product->base_price = $totalBasePriceForProduct;
+            $product->save();
+            DB::commit();
+            return redirect()->route('bill_of_materials.show', $product->slug)->with('success', 'Bill of Material updated.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'Failed to update BoM: ' . $e->getMessage());
         }
+    }
 
-        return redirect()->route('bill_of_materials')->with('success', 'Bill of Material updated successfully.');
+    public function show($productSlug)
+    {
+        $product = Product::where('slug', $productSlug)->with([
+            'category',
+            'billOfMaterial' => function ($query) {
+                $query->where('is_active', true)->with('rawMaterial');
+            }
+        ])->firstOrFail();
+
+        $billOfMaterials = $product->billOfMaterial;
+        $base_price = $product->base_price;
+
+        if ($billOfMaterials->isEmpty()) {
+             return redirect()->route('bill_of_materials.create', ['product_id' => $product->id])
+                            ->with('info', "No active Bill of Material found for {$product->name}. Please create one.");
+        }
+        return view('content.bill_of_material.show', compact('product', 'billOfMaterials', 'base_price'));
     }
 
     public function destroy($productSlug)
     {
         $product = Product::where('slug', $productSlug)->firstOrFail();
         BillOfMaterial::where('product_id', $product->id)->update(['is_active' => false]);
-        return redirect()->route('bill_of_materials')->with('success', 'Bill of Material deleted successfully.');
-    }
-
-    public function show($productSlug)
-    {
-        $product = Product::where('slug', $productSlug)->firstOrFail();
-
-        $billOfMaterials = BillOfMaterial::where('product_id', $product->id)
-            ->with(['rawMaterial', 'product'])
-            ->get();
-
-        if ($billOfMaterials->isEmpty()) {
-            abort(404);
-        }
-
-        $base_price = $billOfMaterials->sum('total_cost');
-
-        return view('content.bill_of_material.show', compact('billOfMaterials', 'base_price'));
+        $product->base_price = 0;
+        $product->save();
+        return redirect()->route('bill_of_materials')->with('success', 'Bill of Material for ' . $product->name . ' deactivated.');
     }
 }

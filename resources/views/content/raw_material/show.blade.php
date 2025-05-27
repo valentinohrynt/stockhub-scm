@@ -21,20 +21,22 @@
                         </div>
                     </div>
                     <div class="price-display-header">
-                        <span>Unit Price</span>
+                        <span>Unit Price (per {{ $rawMaterial->stock_unit }})</span>
                         <h4>Rp{{ number_format($rawMaterial->unit_price, 2) }}</h4>
                     </div>
                     <div class="header-actions">
                         <a href="{{ route('raw_materials') }}" class="btn btn-outline-secondary"><i
                                 class="fas fa-arrow-left me-1"></i> Back</a>
-                        @if(Auth::check() && Auth::user()->role && strtolower(Auth::user()->role->name) != 'staff')
+                        @if (Auth::check() && Auth::user()->role && strtolower(Auth::user()->role->name) != 'staff')
                             <a href="{{ route('raw_materials.edit', $rawMaterial->slug) }}" class="btn btn-primary"><i
                                     class="fas fa-edit me-1"></i> Edit</a>
                             <form method="POST" action="{{ route('raw_materials.delete', $rawMaterial->slug) }}"
-                                onsubmit="return confirm('Are you sure you want to delete this Raw Material? This action cannot be undone.');" style="display:inline;">
+                                onsubmit="return confirm('Are you sure you want to delete this Raw Material? This action cannot be undone.');"
+                                style="display:inline;">
                                 @csrf
                                 @method('PUT')
-                                <button type="submit" class="btn btn-danger"><i class="fas fa-trash me-1"></i> Delete</button>
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-trash me-1"></i>
+                                    Delete</button>
                             </form>
                         @endif
                     </div>
@@ -47,8 +49,8 @@
                         @if ($rawMaterial->image_path)
                             <div class="content-block mb-4">
                                 <h5 class="content-block-title">Image</h5>
-                                <img src="{{ Storage::url($rawMaterial->image_path) }}"
-                                    alt="{{ $rawMaterial->name }}" class="img-fluid rounded border">
+                                <img src="{{ Storage::url($rawMaterial->image_path) }}" alt="{{ $rawMaterial->name }}"
+                                    class="img-fluid rounded border">
                             </div>
                         @endif
                         <div class="content-block mb-4">
@@ -61,7 +63,8 @@
                         </div>
                         @if ($rawMaterial->products && $rawMaterial->products->count() > 0)
                             <div class="content-block">
-                                <h5 class="content-block-title">Used in Products</h5>
+                                <h5 class="content-block-title">Used in Products (Recipe in {{ $rawMaterial->usage_unit }})
+                                </h5>
                                 <div class="table-responsive">
                                     <table class="table modern-table">
                                         <thead>
@@ -73,9 +76,18 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($rawMaterial->products as $product)
+                                                @php
+                                                    // Ambil pivot data dari relasi
+                                                    $pivotData = $product
+                                                        ->billOfMaterial()
+                                                        ->where('raw_material_id', $rawMaterial->id)
+                                                        ->first();
+                                                @endphp
                                                 <tr>
                                                     <td>{{ $product->name }}</td>
-                                                    <td class="text-center">{{ $product->pivot->quantity }}</td>
+                                                    <td class="text-center">
+                                                        {{ $pivotData ? number_format($pivotData->quantity, 2, ',', '.') . ' ' . $rawMaterial->usage_unit : 'N/A' }}
+                                                    </td>
                                                     <td class="text-end">
                                                         <a href="{{ route('products.show', $product->slug) }}"
                                                             class="btn btn-sm btn-outline-primary">View Product</a>
@@ -91,21 +103,27 @@
 
                     <div class="col-lg-5">
                         <div class="content-block mb-4">
-                            <h5 class="content-block-title">Inventory & JIT Parameters</h5>
+                            <h5 class="content-block-title">Inventory & JIT Parameters (in {{ $rawMaterial->stock_unit }})
+                            </h5>
                             <ul class="info-list info-list-dense">
                                 <li>
                                     <span class="label">Current Stock</span>
                                     <span
-                                        class="value {{ $rawMaterial->stock <= ($rawMaterial->signal_point ?? 0) ? 'text-danger fw-bold' : 'text-success fw-bold' }}">{{ number_format($rawMaterial->stock) }}</span>
+                                        class="value {{ $rawMaterial->stock <= ($rawMaterial->signal_point ?? 0) && $rawMaterial->is_active ? 'text-danger fw-bold' : 'text-success fw-bold' }}">
+                                        {{ number_format($rawMaterial->stock, 2, ',', '.') }}
+                                        {{ $rawMaterial->stock_unit }}
+                                    </span>
                                 </li>
                                 <li>
                                     <span class="label">Avg. Daily Usage</span>
                                     <span class="value">{{ number_format($rawMaterial->average_daily_usage ?? 0, 2) }}
+                                        {{ $rawMaterial->stock_unit }}
                                         <small class="text-muted">(Calculated)</small></span>
                                 </li>
                                 <li>
                                     <span class="label">Replenish Quantity</span>
-                                    <span class="value">{{ number_format($rawMaterial->replenish_quantity ?? 0) }}</span>
+                                    <span class="value">{{ number_format($rawMaterial->replenish_quantity ?? 0) }}
+                                        {{ $rawMaterial->stock_unit }}</span>
                                 </li>
                                 <li>
                                     <span class="label">Lead Time (Policy)</span>
@@ -117,13 +135,24 @@
                                 </li>
                                 <li>
                                     <span class="label">Safety Stock <small class="text-muted">(Calculated)</small></span>
-                                    <span class="value">{{ number_format($rawMaterial->safety_stock ?? 0) }}</span>
+                                    <span class="value">{{ number_format($rawMaterial->safety_stock ?? 0, 2, ',', '.') }}
+                                        {{ $rawMaterial->stock_unit }}</span>
                                 </li>
                                 <li>
                                     <span class="label">Signal Point <small class="text-muted">(Calculated)</small></span>
-                                    <span class="value fw-bold">{{ number_format($rawMaterial->signal_point ?? 0) }}</span>
+                                    <span
+                                        class="value fw-bold">{{ number_format($rawMaterial->signal_point ?? 0, 2, ',', '.') }}
+                                        {{ $rawMaterial->stock_unit }}</span>
                                 </li>
                             </ul>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    Usage Unit for Recipes: {{ $rawMaterial->usage_unit }} <br>
+                                    Conversion: 1 {{ $rawMaterial->stock_unit }} =
+                                    {{ number_format($rawMaterial->conversion_factor, 2, ',', '.') }}
+                                    {{ $rawMaterial->usage_unit }}
+                                </small>
+                            </div>
                         </div>
                         <div class="content-block">
                             <h5 class="content-block-title">Additional Details</h5>

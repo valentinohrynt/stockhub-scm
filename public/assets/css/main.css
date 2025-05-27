@@ -118,7 +118,6 @@ footer.footer p {
     transform: scale(1.05);
 }
 
-
 /* --- Mobile Navigation --- */
 @media (max-width: 991.98px) {
     .navbar-collapse {

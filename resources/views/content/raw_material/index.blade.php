@@ -9,7 +9,7 @@
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <h2 class="page-title mb-0">Raw Material List</h2>
                     <div class="d-flex gap-2">
-                        @if(Auth::check() && Auth::user()->role && strtolower(Auth::user()->role->name) != 'staff')
+                        @if (Auth::check() && Auth::user()->role && strtolower(Auth::user()->role->name) != 'staff')
                             <a href="{{ route('raw_materials.recalculate') }}" class="add-btn"
                                 onclick="return confirm('This process will recalculate all inventory analysis data. Continue?')">
                                 <i class="fas fa-calculator"></i> Recalculate Analysis
@@ -89,15 +89,16 @@
                             <div class="col-md-6 col-lg-4">
                                 <div class="product-card shadow-sm h-100">
                                     @if ($raw->image_path)
-                                        <img src="{{ Storage::url($raw->image_path) }}"
-                                            class="card-img-top" alt="{{ $raw->name }}">
+                                        <img src="{{ Storage::url($raw->image_path) }}" class="card-img-top"
+                                            alt="{{ $raw->name }}">
                                     @else
                                         <div class="card-img-top-placeholder"><i class="fas fa-boxes"></i></div>
                                     @endif
 
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h5 class="card-title mb-0" title="{{ $raw->name }}">{{ $raw->name }}
+                                            <h5 class="card-title mb-0" title="{{ $raw->name }}">
+                                                {{ Str::limit($raw->name, 25) }}
                                             </h5>
                                             @if ($raw->is_active)
                                                 <span class="badge bg-success-subtle">Active</span>
@@ -107,7 +108,7 @@
                                         </div>
                                         <p class="product-category">{{ $raw->category->name ?? 'Uncategorized' }}</p>
 
-                                        @if ($raw->stock <= $raw->signal_point && $raw->signal_point > 0)
+                                        @if ($raw->stock <= $raw->signal_point && $raw->signal_point > 0 && $raw->is_active)
                                             <div class="alert alert-warning p-2 text-center small mb-3 fw-bold">
                                                 <i class="fas fa-exclamation-triangle me-1"></i> Needs Re-ordering
                                             </div>
@@ -116,25 +117,28 @@
                                         <div class="info-grid">
                                             <div>
                                                 <span class="info-label">Unit Price</span>
-                                                <span
-                                                    class="info-value">Rp{{ number_format($raw->unit_price ?? 0, 2) }}</span>
+                                                <span class="info-value">Rp{{ number_format($raw->unit_price ?? 0, 2) }}
+                                                    /{{ $raw->stock_unit }}</span>
                                             </div>
                                             <div>
                                                 <span class="info-label">Stock</span>
                                                 <span
-                                                    class="info-value fw-bold {{ $raw->stock <= $raw->signal_point ? 'text-danger' : '' }}">{{ number_format($raw->stock ?? 0) }}</span>
+                                                    class="info-value fw-bold {{ $raw->stock <= $raw->signal_point && $raw->is_active ? 'text-danger' : '' }}">
+                                                    {{ number_format($raw->stock, 2, ',', '.') }} {{ $raw->stock_unit }}
+                                                </span>
                                             </div>
                                             <div>
                                                 <span class="info-label">Signal Point</span>
                                                 <span
-                                                    class="info-value">{{ number_format($raw->signal_point ?? 0) }}</span>
+                                                    class="info-value">{{ number_format($raw->signal_point ?? 0, 2, ',', '.') }}
+                                                    {{ $raw->stock_unit }}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="card-footer d-flex justify-content-end align-items-center gap-2">
                                         <a href="{{ route('raw_materials.show', $raw->slug) }}"
                                             class="btn btn-sm btn-outline-primary"><i class="fas fa-eye me-1"></i> View</a>
-                                        @if(Auth::check() && Auth::user()->role && strtolower(Auth::user()->role->name) != 'staff')
+                                        @if (Auth::check() && Auth::user()->role && strtolower(Auth::user()->role->name) != 'staff')
                                             <a href="{{ route('raw_materials.edit', $raw->slug) }}"
                                                 class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit me-1"></i>
                                                 Edit</a>

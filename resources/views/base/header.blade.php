@@ -117,7 +117,7 @@
                     <div class="dropdown">
                         <a href="#" class="user-avatar" role="button" id="userDropdown" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'User') }}&background=059669&color=fff&size=38"
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'User') }}&background=4F46E5&color=fff&size=38"
                                 alt="{{ auth()->user()->name ?? 'User' }}">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">

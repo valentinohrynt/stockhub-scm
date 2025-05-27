@@ -34,18 +34,6 @@
                                             Stock Addition</option>
                                         <option value="deduction" {{ old('type') == 'deduction' ? 'selected' : '' }}>
                                             Stock Deduction</option>
-                                        <option value="initial_stock"
-                                            {{ old('type') == 'initial_stock' ? 'selected' : '' }}>Initial Stock</option>
-                                        <option value="correction" {{ old('type') == 'correction' ? 'selected' : '' }}>
-                                            Correction</option>
-                                        <option value="production_usage"
-                                            {{ old('type') == 'production_usage' ? 'selected' : '' }}>Production Usage
-                                        </option>
-                                        <option value="breakage" {{ old('type') == 'breakage' ? 'selected' : '' }}>Breakage
-                                        </option>
-                                        <option value="manual_adjustment"
-                                            {{ old('type') == 'manual_adjustment' ? 'selected' : '' }}>Manual Adjustment
-                                        </option>
                                     </select>
                                     @error('type')
                                         <div class="invalid-feedback">{{ $message }}</div>

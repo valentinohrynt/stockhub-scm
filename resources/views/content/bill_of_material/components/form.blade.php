@@ -201,7 +201,7 @@
                 <div class="raw-material-row mb-3 p-3 border rounded" data-row-index="<span class="math-inline">\{index\}"\>
 <div class\="row g\-2 align\-items\-center"\>
 <div class\="col\-lg\-5 col\-md\-12"\>
-<select name\="raw\_materials\[</span>{index}][id]" class="form-select raw-material-select" data-index="<span class="math-inline">\{index\}" required\></span>{optionsHtml}</select>
+<select name\="raw\_materials\[</span>${index}][id]" class="form-select raw-material-select" data-index="<span class="math-inline">\{index\}" required\></span>{optionsHtml}</select>
                         </div>
                         <div class="col-lg-3 col-md-5 col-sm-6">
                             <div class="input-group">

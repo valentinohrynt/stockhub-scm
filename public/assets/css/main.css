@@ -1,0 +1,230 @@
+/* --- Navbar --- */
+.navbar {
+    padding: 1rem 2rem;
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: #111827 !important;
+    letter-spacing: -0.4px;
+}
+
+.navbar-brand span {
+    color: #22c55e;
+}
+
+.nav-link {
+    font-weight: 500;
+    padding: 0.5rem 0.75rem !important;
+    color: #374151 !important;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #22c55e !important;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: #22c55e;
+    bottom: 0;
+    left: 0;
+    transition: width 0.3s ease-in-out;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e5e7eb;
+    transition: border-color 0.3s ease;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.user-avatar:hover {
+    border-color: #22c55e;
+}
+
+.navbar-notification-badge {
+    line-height: 0.5;
+    font-weight: bold;
+}
+
+
+/* --- Footer --- */
+footer.footer {
+    background-color: #f9fafb !important;
+    padding: 2rem 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+footer.footer p {
+    margin-bottom: 0.5rem;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.footer-brand {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #111827;
+    text-decoration: none;
+}
+
+.footer-brand span {
+    color: #22c55e;
+}
+
+.social-icons a {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    color: #374151;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+}
+
+.social-icons a:hover {
+    background-color: #22c55e;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+
+/* --- Mobile Navigation --- */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 260px;
+        height: 100%;
+        background: #ffffff;
+        border-right: 1px solid #e5e7eb;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        padding: 1.5rem;
+        z-index: 1050;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .navbar-collapse.show {
+        transform: translateX(0);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        margin-top: 50px;
+        width: 100%;
+    }
+
+    .nav-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .nav-item:last-child {
+        border-bottom: none;
+    }
+
+    .nav-link {
+        font-size: 1.05rem;
+    }
+
+    .nav-link::after {
+        display: none;
+    }
+
+    .navbar-toggler {
+        border: none;
+        background: none;
+        padding: 0;
+        font-size: 1.5rem;
+        color: #374151;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+
+    .mobile-menu-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        color: #374151;
+        background: #f3f4f6;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        z-index: 1051;
+    }
+}
+
+
+/* --- Miscellaneous Card & Animation Styles --- */
+.material-card {
+    transition: all 0.3s ease;
+    border: 1px solid transparent !important;
+}
+
+.material-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    border-color: #ddd !important;
+    z-index: 2;
+}
+
+.material-card:hover .card-img-top {
+    transform: scale(1.1);
+}
+
+.card-img-container {
+    overflow: hidden;
+}
+
+.card-img-top {
+    transition: transform 0.5s ease;
+}
+
+.btn-action {
+    transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+    transform: scale(1.05);
+}

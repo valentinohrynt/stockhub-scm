@@ -8,8 +8,8 @@
         <div class="header-section">
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="page-title">Form Penyesuaian Stok</h2>
-                <a href="{{ route('raw_materials') }}" class="add-btn" style="background-color: rgba(255,255,255,0.15); color: white; border-color: white;">
-                    <i class="fas fa-arrow-left me-1"></i> Kembali ke Inventaris
+                <a href="{{ route('stock_adjustments') }}" class="add-btn" style="background-color: rgba(255,255,255,0.15); color: white; border-color: white;">
+                    <i class="fas fa-arrow-left me-1"></i> Kembali ke List
                 </a>
             </div>
             <p class="header-subtitle">Pilih jenis penyesuaian dan isi detail yang diperlukan.</p>
@@ -44,7 +44,6 @@
                                     <option value="">-- Pilih Jenis --</option>
                                     <option value="addition" {{ old('type') == 'addition' ? 'selected' : '' }}>Penambahan Stok</option>
                                     <option value="deduction" {{ old('type') == 'deduction' ? 'selected' : '' }}>Pengurangan Stok</option>
-                                    {{-- Tambahkan tipe lain jika perlu, misal: 'correction', 'initial_stock', 'breakage' --}}
                                 </select>
                                 @error('type')
                                     <div class="invalid-feedback">{{ $message }}</div>

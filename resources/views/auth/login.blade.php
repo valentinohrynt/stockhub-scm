@@ -393,7 +393,7 @@
             @endif
 
 
-            <form id="loginForm" method="POST" action="{{ route('login') }}">
+            <form id="loginForm" method="POST" action="{{ route('login.post') }}">
             @csrf
                 <div class="form-group">
                     <i class="bi bi-envelope input-icon"></i>

@@ -194,33 +194,43 @@
                 let optionsHtml = '<option value="">Select raw material</option>';
                 for (const id in rawMaterialsData) {
                     const mat = rawMaterialsData[id];
-                    optionsHtml +=
-                        `<option value="<span class="math-inline">\{id\}" data\-price\="</span>{mat.price_per_stock_unit}" data-stock-unit="<span class="math-inline">\{mat\.stock\_unit\}" data\-usage\-unit\="</span>{mat.usage_unit}" data-conversion-factor="<span class="math-inline">\{mat\.conversion\_factor\}"\></span>{mat.name}</option>`;
+                    optionsHtml += `
+            <option value="${id}"
+                data-price="${mat.price_per_stock_unit}"
+                data-stock-unit="${mat.stock_unit}"
+                data-usage-unit="${mat.usage_unit}"
+                data-conversion-factor="${mat.conversion_factor}">
+                ${mat.name}
+            </option>`;
                 }
+
                 return `
-                <div class="raw-material-row mb-3 p-3 border rounded" data-row-index="<span class="math-inline">\{index\}"\>
-<div class\="row g\-2 align\-items\-center"\>
-<div class\="col\-lg\-5 col\-md\-12"\>
-<select name\="raw\_materials\[</span>${index}][id]" class="form-select raw-material-select" data-index="<span class="math-inline">\{index\}" required\></span>{optionsHtml}</select>
-                        </div>
-                        <div class="col-lg-3 col-md-5 col-sm-6">
-                            <div class="input-group">
-                                <input type="number" step="any" name="raw_materials[${index}][quantity]" class="form-control quantity-input" placeholder="0" value="1" required min="0.00001">
-                                <span class="input-group-text usage-unit-display">Usage Unit</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-5 col-sm-6">
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="text" class="form-control cost-output" placeholder="Cost" readonly>
-                            </div>
-                        </div>
-                        <div class="col-lg-1 col-md-2 col-sm-12 text-end">
-                            <button type="button" class="btn btn-icon btn-danger remove-material" title="Remove Material"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                </div>`;
+    <div class="raw-material-row mb-3 p-3 border rounded" data-row-index="${index}">
+        <div class="row g-2 align-items-center">
+            <div class="col-lg-5 col-md-12">
+                <select name="raw_materials[${index}][id]" class="form-select raw-material-select" data-index="${index}" required>
+                    ${optionsHtml}
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-5 col-sm-6">
+                <div class="input-group">
+                    <input type="number" step="any" name="raw_materials[${index}][quantity]" class="form-control quantity-input" placeholder="0" value="1" required min="0.00001">
+                    <span class="input-group-text usage-unit-display">Usage Unit</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-5 col-sm-6">
+                <div class="input-group">
+                    <span class="input-group-text">Rp</span>
+                    <input type="text" class="form-control cost-output" placeholder="Cost" readonly>
+                </div>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-12 text-end">
+                <button type="button" class="btn btn-icon btn-danger remove-material" title="Remove Material"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    </div>`;
             }
+
 
             function addRowListeners(rowElement) {
                 rowElement.querySelector('.remove-material').addEventListener('click', () => {
@@ -285,7 +295,7 @@
                 if (hasDuplicate) {
                     alert(
                         "Duplicate raw materials selected. Please choose unique ingredients for the recipe."
-                        );
+                    );
                     e.preventDefault();
                     return;
                 }

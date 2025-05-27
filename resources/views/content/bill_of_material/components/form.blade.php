@@ -121,8 +121,9 @@
             const wrapper = document.getElementById('raw-materials-wrapper');
             const addButton = document.getElementById('add-material');
             const totalCostDisplay = document.getElementById('total-cost-value');
-            const rawMaterialsData = @json(
-                $rawMaterials->mapWithKeys(fn($item) => [
+            const rawMaterialsData = {!! json_encode(
+                $rawMaterials->mapWithKeys(
+                    fn($item) => [
                         $item->id => [
                             'name' => $item->name,
                             'price_per_stock_unit' => $item->unit_price,
@@ -130,9 +131,9 @@
                             'usage_unit' => $item->usage_unit,
                             'conversion_factor' => $item->conversion_factor,
                         ],
-                    ]
-                )
-            );
+                    ],
+                ),
+            ) !!};
 
             const numberFormatter = new Intl.NumberFormat('id-ID', {
                 minimumFractionDigits: 2,
@@ -283,7 +284,8 @@
                 }
                 if (hasDuplicate) {
                     alert(
-                        "Duplicate raw materials selected. Please choose unique ingredients for the recipe.");
+                        "Duplicate raw materials selected. Please choose unique ingredients for the recipe."
+                        );
                     e.preventDefault();
                     return;
                 }

@@ -8,7 +8,7 @@
         <div class="header-section">
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="page-title">Form Penyesuaian Stok</h2>
-                <a href="{{ route('inventory') }}" class="add-btn" style="background-color: rgba(255,255,255,0.15); color: white; border-color: white;">
+                <a href="{{ route('raw_materials') }}" class="add-btn" style="background-color: rgba(255,255,255,0.15); color: white; border-color: white;">
                     <i class="fas fa-arrow-left me-1"></i> Kembali ke Inventaris
                 </a>
             </div>
@@ -78,7 +78,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a href="{{ route('inventory') }}" class="btn btn-outline-secondary">Batal</a>
+                        <a href="{{ route('raw_materials') }}" class="btn btn-outline-secondary">Batal</a>
                         <button type="submit" class="btn btn-primary">Simpan Penyesuaian</button>
                     </div>
                 </form>

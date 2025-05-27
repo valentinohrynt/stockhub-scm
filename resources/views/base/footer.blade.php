@@ -3,7 +3,7 @@
         <div class="row align-items-center py-4">
             <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
                 <a class="footer-brand" href="{{ url('/') }}">Cafe<span>Hub</span></a>
-                <p class="mt-2 mb-0">&copy; {{ date('Y') }} CafeHub Management. All Rights Reserved.</p>
+                <p class="mt-2 mb-0">&copy; {{ date('Y') }} StockHub Management. All Rights Reserved.</p>
             </div>
             <div class="col-md-6 text-center text-md-end">
                 <p class="mb-2">Follow us on social media:</p>

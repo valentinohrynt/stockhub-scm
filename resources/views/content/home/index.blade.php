@@ -6,7 +6,7 @@
     <div class="dashboard-container">
         <div class="dashboard-header">
             <div class="container">
-                <h1 class="dashboard-title">Welcome to CafeHub</h1>
+                <h1 class="dashboard-title">Welcome to StockHub</h1>
                 <p class="dashboard-subtitle">Your central command center for managing the cafe.</p>
             </div>
         </div>

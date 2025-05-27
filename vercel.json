@@ -38,8 +38,8 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://cafehub-scm.vercel.app",
-        "APP_KEY": "base64:cgf15sBzo06Mp93zT63u8U/UBYfRpvMRuhnYNGl5+uo=",
+        "APP_URL": "https://stockhub-scm.vercel.app",
+        "APP_KEY": "base64:yKODiyp4JNQH7jBTloHLNGd55WCrg5rxn8HEo9ylmJY=",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",

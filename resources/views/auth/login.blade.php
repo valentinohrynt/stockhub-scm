@@ -7,7 +7,6 @@
     <title>Login - Welcome Back</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        /* CSS Anda tetap sama */
         * {
             margin: 0;
             padding: 0;
@@ -17,7 +16,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f8fffe 0%, #e8f8f5 50%, #d1f2eb 100%);
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 50%, #BFDBFE 100%);
             position: relative;
             overflow-x: hidden;
         }
@@ -34,7 +33,7 @@
 
         .particle {
             position: absolute;
-            background: rgba(46, 204, 113, 0.1);
+            background: rgba(79, 70, 229, 0.1);
             border-radius: 50%;
             animation: float 6s ease-in-out infinite;
         }
@@ -104,12 +103,12 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 8px 32px 0 rgba(46, 204, 113, 0.15);
-            border: 1px solid rgba(46, 204, 113, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(67, 56, 202, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.2); 
             width: 100%;
             max-width: 420px;
             transform: translateY(50px);
@@ -126,7 +125,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
             transition: left 0.5s;
         }
 
@@ -147,15 +146,15 @@
         }
 
         .login-header h1 {
-            color: #2c3e50;
+            color: #3730A3;
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(46, 204, 113, 0.1);
+            text-shadow: 0 2px 10px rgba(79, 70, 229, 0.1);
         }
 
         .login-header p {
-            color: #5d6d7e;
+            color: #4B5563;
             font-size: 1.1rem;
         }
 
@@ -169,24 +168,24 @@
             padding: 15px 20px 15px 50px;
             border: none;
             border-radius: 15px;
-            background: rgba(255, 255, 255, 0.7);
-            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.8); 
+            color: #1F2937; 
             font-size: 16px;
             transition: all 0.3s ease;
             backdrop-filter: blur(5px);
-            border: 2px solid rgba(46, 204, 113, 0.2);
+            border: 2px solid rgba(99, 102, 241, 0.2); 
         }
 
         .form-input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.9);
-            border-color: #2ecc71;
+            background: rgba(255, 255, 255, 1);
+            border-color: #4F46E5;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.2);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2); 
         }
 
         .form-input::placeholder {
-            color: #85929e;
+            color: #6B7280;
         }
 
         .input-icon {
@@ -194,14 +193,14 @@
             left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #85929e;
+            color: #6B7280; 
             font-size: 18px;
             transition: all 0.3s ease;
             z-index: 2;
         }
 
         .form-group:focus-within .input-icon {
-            color: #2ecc71;
+            color: #4F46E5; 
             transform: translateY(-50%) scale(1.1);
         }
 
@@ -216,20 +215,20 @@
         }
 
         .remember-label {
-            color: rgba(255, 255, 255, 0.9);
+            color: #374151; 
             font-size: 14px;
             cursor: pointer;
         }
 
         .forgot-password {
-            color: rgba(255, 255, 255, 0.8);
+            color: #4F46E5; 
             text-decoration: none;
             font-size: 14px;
             transition: all 0.3s ease;
         }
 
         .forgot-password:hover {
-            color: white;
+            color: #4338CA; 
             text-decoration: underline;
         }
 
@@ -238,7 +237,7 @@
             padding: 15px;
             border: none;
             border-radius: 15px;
-            background: linear-gradient(135deg, #00c851, #007e33);
+            background: linear-gradient(135deg, #4F46E5, #3730A3);
             color: white;
             font-size: 18px;
             font-weight: 600;
@@ -254,8 +253,8 @@
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(0, 200, 81, 0.4);
-            background: linear-gradient(135deg, #00e676, #00c851);
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.4); 
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
         }
 
         .login-btn:active {
@@ -309,13 +308,13 @@
         }
 
         .success-message {
-            background: rgba(0, 200, 81, 0.9);
+            background: rgba(22, 163, 74, 0.9); 
             color: white;
             padding: 12px 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 14px;
-            border-left: 4px solid #00c851;
+            border-left: 4px solid #16A34A;
             animation: slideInDown 0.5s ease;
         }
 
@@ -394,7 +393,7 @@
             @endif
 
 
-            <form id="loginForm" method="POST" action="{{ route('login') }}"> 
+            <form id="loginForm" method="POST" action="{{ route('login') }}">
             @csrf
                 <div class="form-group">
                     <i class="bi bi-envelope input-icon"></i>
@@ -427,7 +426,7 @@
                 animateError(emailInput);
                 isValid = false;
             }
-            if (!passwordInput.value) { 
+            if (!passwordInput.value) {
                 animateError(passwordInput);
                 isValid = false;
             }
@@ -439,14 +438,14 @@
 
             const button = document.getElementById('loginButton');
             const spinner = document.getElementById('loadingSpinner');
-            button.disabled = true; 
+            button.disabled = true;
             button.style.pointerEvents = 'none';
             spinner.style.display = 'inline-block';
         });
 
         function animateError(element) {
-            element.style.borderColor = '#dc3545';
-            element.classList.add('shake-animation'); 
+            element.style.borderColor = '#dc3545'; 
+            element.classList.add('shake-animation');
 
 
             element.addEventListener('animationend', () => {
@@ -467,7 +466,7 @@
         if (controllerErrorMsg) {
             setTimeout(() => {
                 controllerErrorMsg.style.display = 'none';
-            }, 7000); =
+            }, 7000);
         }
 
         const controllerSuccessMsg = document.getElementById('controllerSuccessMessage');
@@ -489,12 +488,14 @@
 
         document.querySelector('.login-card').addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-5px) scale(1.02)';
-            this.style.boxShadow = '0 20px 40px 0 rgba(46, 204, 113, 0.3)';
+
+            this.style.boxShadow = '0 20px 40px 0 rgba(79, 70, 229, 0.3)';
         });
 
         document.querySelector('.login-card').addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(0) scale(1)';
-            this.style.boxShadow = '0 8px 32px 0 rgba(46, 204, 113, 0.15)';
+
+            this.style.boxShadow = '0 8px 32px 0 rgba(67, 56, 202, 0.15)';
         });
 
         document.addEventListener('keydown', function(e) {

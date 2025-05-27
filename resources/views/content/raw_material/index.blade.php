@@ -92,9 +92,9 @@
                         @foreach ($rawMaterials as $raw)
                             <div class="col-md-6 col-lg-4">
                                 <div class="product-card shadow-sm h-100">
-                                    @if ($product->image_path)
-                                        <img src="{{ Storage::url($product->image_path) }}" class="card-img-top"
-                                            alt="{{ $product->name }}">
+                                    @if ($raw->image_path)
+                                        <img src="{{ Storage::url($raw->image_path) }}" class="card-img-top"
+                                            alt="{{ $eaw->name }}">
                                     @else
                                         <div class="card-img-top-placeholder">
                                             <i class="fas fa-box-open"></i>

@@ -159,14 +159,6 @@
                                         {{ $rawMaterial->stock_unit }}</span>
                                 </li>
                             </ul>
-                            <div class="mt-2">
-                                <small class="text-muted">
-                                    {{ __('messages.raw_material_usage_unit_for_recipes') }}:
-                                    {{ $rawMaterial->usage_unit }} <br>
-                                    {{ __('messages.conversion_factor') }}:
-                                    {{ __('messages.raw_material_conversion_info', ['stock_unit' => $rawMaterial->stock_unit, 'factor' => number_format($rawMaterial->conversion_factor, 2, ',', '.'), 'usage_unit' => $rawMaterial->usage_unit]) }}
-                                </small>
-                            </div>
                         </div>
                         <div class="content-block">
                             <h5 class="content-block-title">{{ __('messages.additional_details') }}</h5>

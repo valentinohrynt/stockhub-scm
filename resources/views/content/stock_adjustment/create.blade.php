@@ -77,7 +77,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a href="{{ route('raw_materials') }}" class="btn btn-outline-secondary">Batal</a>
+                        <a href="{{ route('stock_adjusments') }}" class="btn btn-outline-secondary">Batal</a>
                         <button type="submit" class="btn btn-primary">Simpan Penyesuaian</button>
                     </div>
                 </form>

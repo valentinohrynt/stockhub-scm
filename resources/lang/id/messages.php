@@ -182,6 +182,7 @@ return [
     'avg_usage_x_safety_days' => 'Rata-rata Penggunaan x Hari Stok Pengaman',
     'avg_usage_x_lead_time_plus_safety_stock' => 'Rata-rata Penggunaan x Waktu Tunggu + Stok Pengaman',
     'image'=> 'Gambar',
+    'needs_reordering_alert' => 'Perhatian: Bahan baku ini membutuhkan pemesanan ulang.',
 
     // Suppliers
     'supplier_list' => 'Daftar Pemasok',

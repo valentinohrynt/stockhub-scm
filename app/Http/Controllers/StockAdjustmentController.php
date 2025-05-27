@@ -135,7 +135,7 @@ class StockAdjustmentController extends Controller
 
     private function checkJitSignalForMaterial(RawMaterial $material): void
     {
-        $this->inventoryAnalyticsService->runCalculationsForMaterial($material);
+        $this->inventoryAnalyticsService->runCalculations($material);
         $material->refresh();
 
         if (is_null($material->signal_point) || is_null($material->replenish_quantity) || $material->signal_point < 0) {

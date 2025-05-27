@@ -130,7 +130,9 @@
                             'usage_unit' => $item->usage_unit,
                             'conversion_factor' => $item->conversion_factor,
                         ],
-                    ]));
+                    ]
+                )
+            );
 
             const numberFormatter = new Intl.NumberFormat('id-ID', {
                 minimumFractionDigits: 2,

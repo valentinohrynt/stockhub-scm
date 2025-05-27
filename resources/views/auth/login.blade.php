@@ -374,7 +374,7 @@
     <div class="container">
         <div class="login-card">
             <div class="login-header">
-                <h1><i class="bi bi-cup-hot"></i> CafeHub</h1>
+                <h1><i class="bi bi-box-seam"></i> StockHub</h1>
                 <p>Sign in to your account</p>
             </div>
 

@@ -143,7 +143,7 @@ class StockAdjustmentController extends Controller
             return;
         }
         if ($material->stock <= $material->signal_point) {
-            $flaskApiUrl = env('FLASK_API_URL', 'https://cafehub-forecast-api.vercel.app');
+            $flaskApiUrl = env('FLASK_API_URL', 'https://stockhub-jit-api.vercel.app');
             try {
                 $payload = [
                     'product_name' => $material->name,

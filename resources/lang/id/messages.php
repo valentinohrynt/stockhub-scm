@@ -286,6 +286,15 @@ return [
     'search_raw_material_name_placeholder' => 'Cari nama bahan baku...',
     'stock_adjustment_saved_success' => 'Penyesuaian stok berhasil disimpan.',
     'stock_adjustment_failed_error' => 'Gagal menyimpan: :error',
+    'addition' => 'Penambahan Stok',
+    'deduction' => 'Pengurangan Stok',
+    'initial_stock' => 'Stok Awal',
+    'correction' => 'Koreksi',
+    'production_usage' => 'Penggunaan Produksi',
+    'breakage' => 'Kerusakan',
+    'transfer_out' => 'Transfer Keluar',
+    'transfer_in' => 'Transfer Masuk',
+    'manual_adjustment' => 'Penyesuaian Manual',
 
 
     // Users

@@ -19,21 +19,33 @@
                     <form action="{{ route('stock_adjustments') }}" method="GET">
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <label for="search_raw_material" class="form-label small">{{ __('messages.raw_material_name_label_filter') }}</label>
+                                <label for="search_raw_material"
+                                    class="form-label small">{{ __('messages.raw_material_name_label_filter') }}</label>
                                 <input type="text" class="form-control" name="search_raw_material"
-                                    placeholder="{{ __('messages.search_raw_material_name_placeholder') }}" value="{{ request('search_raw_material') }}">
+                                    placeholder="{{ __('messages.search_raw_material_name_placeholder') }}"
+                                    value="{{ request('search_raw_material') }}">
                             </div>
                             <div class="col-md-2">
                                 <label for="type" class="form-label small">{{ __('messages.movement_type') }}</label>
                                 <select class="form-select" name="type">
                                     <option value="">{{ __('messages.all_types') }}</option>
-                                    <option value="addition" {{ request('type') == 'addition' ? 'selected' : '' }}>{{ __('messages.stock_addition') }}</option>
-                                    <option value="deduction" {{ request('type') == 'deduction' ? 'selected' : '' }}>{{ __('messages.stock_deduction') }}</option>
-                                    <option value="initial_stock" {{ request('type') == 'initial_stock' ? 'selected' : '' }}>{{ __('messages.initial_stock') }}</option>
-                                    <option value="correction" {{ request('type') == 'correction' ? 'selected' : '' }}>{{ __('messages.correction') }}</option>
-                                    <option value="production_usage" {{ request('type') == 'production_usage' ? 'selected' : '' }}>{{ __('messages.production_usage') }}</option>
-                                    <option value="breakage" {{ request('type') == 'breakage' ? 'selected' : '' }}>{{ __('messages.breakage') }}</option>
-                                    <option value="manual_adjustment" {{ request('type') == 'manual_adjustment' ? 'selected' : '' }}>{{ __('messages.manual_adjustment') }}</option>
+                                    <option value="addition" {{ request('type') == 'addition' ? 'selected' : '' }}>
+                                        {{ __('messages.stock_addition') }}</option>
+                                    <option value="deduction" {{ request('type') == 'deduction' ? 'selected' : '' }}>
+                                        {{ __('messages.stock_deduction') }}</option>
+                                    <option value="initial_stock"
+                                        {{ request('type') == 'initial_stock' ? 'selected' : '' }}>
+                                        {{ __('messages.initial_stock') }}</option>
+                                    <option value="correction" {{ request('type') == 'correction' ? 'selected' : '' }}>
+                                        {{ __('messages.correction') }}</option>
+                                    <option value="production_usage"
+                                        {{ request('type') == 'production_usage' ? 'selected' : '' }}>
+                                        {{ __('messages.production_usage') }}</option>
+                                    <option value="breakage" {{ request('type') == 'breakage' ? 'selected' : '' }}>
+                                        {{ __('messages.breakage') }}</option>
+                                    <option value="manual_adjustment"
+                                        {{ request('type') == 'manual_adjustment' ? 'selected' : '' }}>
+                                        {{ __('messages.manual_adjustment') }}</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -58,6 +70,7 @@
                     </form>
                 </div>
             </div>
+
 
             <div class="content-section">
                 @if ($stockMovements->count())
@@ -91,7 +104,7 @@
                                         <td>
                                             <span
                                                 class="badge bg-{{ $movement->quantity > 0 ? 'success' : ($movement->quantity < 0 ? 'danger' : 'secondary') }}-subtle">
-                                                {{ Str::title(str_replace('_', ' ', __('messages.' . $movement->type, [], 'id'))) }}
+                                                {{ Str::title(str_replace('_', ' ', __('messages.' . $movement->type))) }}
                                             </span>
                                         </td>
                                         <td

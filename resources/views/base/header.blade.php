@@ -21,9 +21,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('transactions*') ? 'active' : '' }}"
-                            href="{{ route('transactions') }}">
-                            <i class="fas fa-cash-register me-1"></i> Transactions
+                        <a class="nav-link {{ request()->is('stock-adjustments*') ? 'active' : '' }}"
+                            href="{{ route('stock_adjustments.index') }}"> {/* Arahkan ke index riwayat atau create */}
+                            <i class="fas fa-exchange-alt me-1"></i> Penyesuaian Stok
                         </a>
                     </li>
                     <li class="nav-item">

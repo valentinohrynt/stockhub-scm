@@ -13,17 +13,16 @@
 
         <div class="container py-4">
             <div class="row g-4">
-
                 <div class="col-lg-9">
                     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
                         <div class="col">
-                            <a href="{{ route('transactions') }}" class="text-decoration-none">
+                            <a href="{{ route('stock_adjustments.create') }}" class="text-decoration-none">
                                 <div class="dashboard-card h-100">
-                                    <div class="dashboard-card-icon" style="--icon-bg: #E0F2FE; --icon-color: #0EA5E9;">
-                                        <i class="fas fa-cash-register"></i>
+                                    <div class="dashboard-card-icon" style="--icon-bg: #FFF7ED; --icon-color: #F97316;">
+                                        <i class="fas fa-exchange-alt"></i>
                                     </div>
-                                    <h5 class="dashboard-card-title">Transactions</h5>
-                                    <p class="dashboard-card-text">Manage POS, payments, and view order history.</p>
+                                    <h5 class="dashboard-card-title">Penyesuaian Stok</h5>
+                                    <p class="dashboard-card-text">Catat penambahan atau pengurangan stok secara manual.</p>
                                 </div>
                             </a>
                         </div>

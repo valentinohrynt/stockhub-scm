@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\RawMaterial;
-use App\Models\MaterialConsumptionLog;
+use App\Models\StockMovementLog;
 use App\Models\JitNotification;
 use Illuminate\Support\Facades\Log;
 
@@ -25,9 +25,10 @@ class InventoryAnalyticsService
         $notificationsTriggered = 0;
 
         foreach ($materials as $material) {
-            $totalConsumed = MaterialConsumptionLog::where('raw_material_id', $material->id)
-                ->where('consumption_date', '>=', now()->subDays($calculationPeriodDays))
-                ->sum('quantity_used');
+            $totalConsumed = StockMovementLog::where('raw_material_id', $material->id)
+                ->whereIn('type', ['deduction', 'production_usage'])
+                ->where('movement_date', '>=', now()->subDays($calculationPeriodDays)->toDateString())
+                ->sum('quantity');
             
             $newAverage = $totalConsumed > 0 ? $totalConsumed / $calculationPeriodDays : 0;
 
@@ -47,7 +48,7 @@ class InventoryAnalyticsService
 
             $updatedMaterial = $material->fresh(); 
 
-            if ($updatedMaterial->stock <= $updatedMaterial->signal_point) {
+            if ($updatedMaterial->stock <= $updatedMaterial->signal_point && $updatedMaterial->signal_point > 0) { 
                 JitNotification::firstOrCreate(
                     [
                         'raw_material_id' => $updatedMaterial->id,

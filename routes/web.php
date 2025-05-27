@@ -6,7 +6,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\RawMaterialController;
-use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\BillOfMaterialController;
 use App\Http\Controllers\JitNotificationController;
 use App\Http\Controllers\UserController;
@@ -26,13 +25,9 @@ Route::middleware('auth')->group(function () {
     // Admin & Supervisor: Full access
     // Staff: Full POS access
     Route::middleware('role:admin,supervisor,staff')->group(function () {
-        Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions');
-        Route::get('/transactions/cashier', [TransactionController::class, 'create'])->name('transactions.create');
-        Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
-        Route::get('/transactions/history', [TransactionController::class, 'historyIndex'])->name('transactions.history');
-        Route::get('/transactions/history/{id}', [TransactionController::class, 'historyShow'])->name('transactions.history.show');
-        Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
-        Route::put('/transactions/{id}', [TransactionController::class, 'updateStatus'])->name('transactions.updateStatus');
+        Route::get('/stock-adjustments/create', [App\Http\Controllers\StockAdjustmentController::class, 'create'])->name('stock_adjustments.create');
+        Route::post('/stock-adjustments', [App\Http\Controllers\StockAdjustmentController::class, 'store'])->name('stock_adjustments.store');
+        Route::get('/stock-adjustments', [App\Http\Controllers\StockAdjustmentController::class, 'index'])->name('stock_adjustments.index'); 
     });
 
     // Admin & Supervisor: Full access

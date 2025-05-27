@@ -115,6 +115,18 @@
                                     </span>
                                 </li>
                                 <li>
+                                    <span class="label">Usage Unit for Recipes</span>
+                                    <span class="value">
+                                        {{ $rawMaterial->usage_unit ?? 'N/A' }}</span>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="label">Conversion</span>
+                                    <span class="value">1 {{ $rawMaterial->stock_unit }} =
+                                        {{ number_format($rawMaterial->conversion_factor, 2, ',', '.') }}
+                                        {{ $rawMaterial->usage_unit }}</span>
+                                </li>
+                                <li>
                                     <span class="label">Avg. Daily Usage</span>
                                     <span class="value">{{ number_format($rawMaterial->average_daily_usage ?? 0, 2) }}
                                         {{ $rawMaterial->stock_unit }}

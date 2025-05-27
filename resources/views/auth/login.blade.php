@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id"> {{-- Changed lang to id --}}
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Welcome Back</title>
+    <title>{{ __('messages.login_title') }}</title> {{-- Using lang file --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
+        /* ... (existing styles remain the same) ... */
         * {
             margin: 0;
             padding: 0;
@@ -108,7 +109,7 @@
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 8px 32px 0 rgba(67, 56, 202, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.2); 
+            border: 1px solid rgba(99, 102, 241, 0.2);
             width: 100%;
             max-width: 420px;
             transform: translateY(50px);
@@ -168,12 +169,12 @@
             padding: 15px 20px 15px 50px;
             border: none;
             border-radius: 15px;
-            background: rgba(255, 255, 255, 0.8); 
-            color: #1F2937; 
+            background: rgba(255, 255, 255, 0.8);
+            color: #1F2937;
             font-size: 16px;
             transition: all 0.3s ease;
             backdrop-filter: blur(5px);
-            border: 2px solid rgba(99, 102, 241, 0.2); 
+            border: 2px solid rgba(99, 102, 241, 0.2);
         }
 
         .form-input:focus {
@@ -181,7 +182,7 @@
             background: rgba(255, 255, 255, 1);
             border-color: #4F46E5;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2); 
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2);
         }
 
         .form-input::placeholder {
@@ -193,14 +194,14 @@
             left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #6B7280; 
+            color: #6B7280;
             font-size: 18px;
             transition: all 0.3s ease;
             z-index: 2;
         }
 
         .form-group:focus-within .input-icon {
-            color: #4F46E5; 
+            color: #4F46E5;
             transform: translateY(-50%) scale(1.1);
         }
 
@@ -215,20 +216,20 @@
         }
 
         .remember-label {
-            color: #374151; 
+            color: #374151;
             font-size: 14px;
             cursor: pointer;
         }
 
         .forgot-password {
-            color: #4F46E5; 
+            color: #4F46E5;
             text-decoration: none;
             font-size: 14px;
             transition: all 0.3s ease;
         }
 
         .forgot-password:hover {
-            color: #4338CA; 
+            color: #4338CA;
             text-decoration: underline;
         }
 
@@ -253,7 +254,7 @@
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.4); 
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.4);
             background: linear-gradient(135deg, #6366F1, #4F46E5);
         }
 
@@ -308,7 +309,7 @@
         }
 
         .success-message {
-            background: rgba(22, 163, 74, 0.9); 
+            background: rgba(22, 163, 74, 0.9);
             color: white;
             padding: 12px 20px;
             border-radius: 10px;
@@ -329,6 +330,7 @@
                 opacity: 1;
             }
         }
+
         @media (max-width: 480px) {
             .login-card {
                 padding: 30px 20px;
@@ -374,8 +376,8 @@
     <div class="container">
         <div class="login-card">
             <div class="login-header">
-                <h1><i class="bi bi-box-seam"></i> StockHub</h1>
-                <p>Sign in to your account</p>
+                <h1><i class="bi bi-box-seam"></i> {{ __('messages.app_name') }}</h1> {{-- Using lang file --}}
+                <p>{{ __('messages.login_subtitle') }}</p> {{-- Using lang file --}}
             </div>
 
             @if ($errors->any())
@@ -394,20 +396,21 @@
 
 
             <form id="loginForm" method="POST" action="{{ route('login.post') }}">
-            @csrf
+                @csrf
                 <div class="form-group">
                     <i class="bi bi-envelope input-icon"></i>
                     <input type="email" name="email" id="email" class="form-input"
-                        placeholder="Enter your email" value="{{ old('email') }}" required autofocus>
+                        placeholder="{{ __('messages.email_placeholder') }}" value="{{ old('email') }}" required
+                        autofocus> {{-- Using lang file --}}
                 </div>
                 <div class="form-group">
                     <i class="bi bi-lock input-icon"></i>
                     <input type="password" name="password" id="password" class="form-input"
-                        placeholder="Enter your password" required>
+                        placeholder="{{ __('messages.password_placeholder') }}" required> {{-- Using lang file --}}
                 </div>
                 <button type="submit" class="login-btn" id="loginButton">
                     <i class="bi bi-box-arrow-in-right"></i>
-                    Sign In
+                    {{ __('messages.login_button') }} {{-- Using lang file --}}
                     <div class="loading" id="loadingSpinner">
                         <div class="spinner"></div>
                     </div>
@@ -444,7 +447,7 @@
         });
 
         function animateError(element) {
-            element.style.borderColor = '#dc3545'; 
+            element.style.borderColor = '#dc3545';
             element.classList.add('shake-animation');
 
 
@@ -453,7 +456,7 @@
             });
         }
 
-         const styleSheet = document.createElement("style");
+        const styleSheet = document.createElement("style");
         styleSheet.type = "text/css";
         styleSheet.innerText = `
             .shake-animation {
@@ -499,11 +502,14 @@
         });
 
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'BUTTON')) {
+            if (e.key === 'Enter' && (document.activeElement.tagName === 'INPUT' || document.activeElement
+                    .tagName === 'BUTTON')) {
                 if (document.getElementById('loginForm').contains(document.activeElement)) {
                     const loginButton = document.getElementById('loginButton');
                     if (!loginButton.disabled) {
-                         document.getElementById('loginForm').dispatchEvent(new Event('submit', { cancelable: true }));
+                        document.getElementById('loginForm').dispatchEvent(new Event('submit', {
+                            cancelable: true
+                        }));
                     }
                 }
             }

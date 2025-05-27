@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title', 'Manual Stock Adjustment')
+@section('title', __('messages.stock_adjustment_form_title'))
 
 @section('content')
     <div class="container py-4">
         <div class="modern-container">
             <div class="header-section">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h2 class="page-title">Stock Adjustment Form</h2>
+                    <h2 class="page-title">{{ __('messages.stock_adjustment_form_title') }}</h2>
                     <a href="{{ route('stock_adjustments') }}" class="add-btn"
                         style="background-color: rgba(255,255,255,0.15); color: white; border-color: white;">
-                        <i class="fas fa-arrow-left me-1"></i> Back to List
+                        <i class="fas fa-arrow-left me-1"></i> {{ __('messages.back_to_list') }}
                     </a>
                 </div>
-                <p class="header-subtitle">Select the adjustment type and fill in the required details.</p>
+                <p class="header-subtitle">{{ __('messages.stock_adjustment_form_subtitle') }}</p>
             </div>
 
             <div class="content-section">
@@ -22,29 +22,28 @@
                         @csrf
 
                         <div class="form-section">
-                            <h5 class="section-title">Adjustment Details</h5>
+                            <h5 class="section-title">{{ __('messages.adjustment_details') }}</h5>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="type_select" class="form-label">Adjustment Type <span
-                                            class="text-danger">*</span></label>
+                                    <label for="type_select" class="form-label">{{ __('messages.adjustment_type') }} {!! __('messages.required_field_indicator') !!}</label>
                                     <select name="type" id="type_select"
                                         class="form-select @error('type') is-invalid @enderror" required>
-                                        <option value="">-- Select Type --</option>
+                                        <option value="">{{ __('messages.select_type_placeholder') }}</option>
                                         <option value="addition" {{ old('type') == 'addition' ? 'selected' : '' }}>
-                                            Stock Addition</option>
+                                            {{ __('messages.stock_addition') }}</option>
                                         <option value="deduction" {{ old('type') == 'deduction' ? 'selected' : '' }}>
-                                            Stock Deduction</option>
+                                            {{ __('messages.stock_deduction') }}</option>
                                         <option value="initial_stock"
-                                            {{ old('type') == 'initial_stock' ? 'selected' : '' }}>Initial Stock</option>
+                                            {{ old('type') == 'initial_stock' ? 'selected' : '' }}>{{ __('messages.initial_stock') }}</option>
                                         <option value="correction" {{ old('type') == 'correction' ? 'selected' : '' }}>
-                                            Correction</option>
+                                            {{ __('messages.correction') }}</option>
                                         <option value="production_usage"
-                                            {{ old('type') == 'production_usage' ? 'selected' : '' }}>Production Usage
+                                            {{ old('type') == 'production_usage' ? 'selected' : '' }}>{{ __('messages.production_usage') }}
                                         </option>
-                                        <option value="breakage" {{ old('type') == 'breakage' ? 'selected' : '' }}>Breakage
+                                        <option value="breakage" {{ old('type') == 'breakage' ? 'selected' : '' }}>{{ __('messages.breakage') }}
                                         </option>
                                         <option value="manual_adjustment"
-                                            {{ old('type') == 'manual_adjustment' ? 'selected' : '' }}>Manual Adjustment
+                                            {{ old('type') == 'manual_adjustment' ? 'selected' : '' }}>{{ __('messages.manual_adjustment') }}
                                         </option>
                                     </select>
                                     @error('type')
@@ -53,18 +52,17 @@
                                 </div>
 
                                 <div class="col-md-6" id="raw_material_selection_div">
-                                    <label for="raw_material_id_input" class="form-label">Raw Material <span
-                                            class="text-danger">*</span></label>
+                                    <label for="raw_material_id_input" class="form-label">{{ __('messages.nav_inventory') }} {!! __('messages.required_field_indicator') !!}</label>
                                     <select name="raw_material_id" id="raw_material_id_input"
                                         class="form-select @error('raw_material_id') is-invalid @enderror">
-                                        <option value="">-- Select Raw Material --</option>
+                                        <option value="">{{ __('messages.select_raw_material_placeholder_stock') }}</option>
                                         @foreach ($rawMaterials as $material)
                                             <option value="{{ $material->id }}"
                                                 data-stock-unit="{{ $material->stock_unit }}"
                                                 data-usage-unit="{{ $material->usage_unit }}"
                                                 data-conversion-factor="{{ $material->conversion_factor }}"
                                                 {{ old('raw_material_id') == $material->id ? 'selected' : '' }}>
-                                                {{ $material->name }} (Stock: {{ number_format($material->stock, 2) }}
+                                                {{ $material->name }} ({{ __('messages.current_stock') }}: {{ number_format($material->stock, 2) }}
                                                 {{ $material->stock_unit }})
                                             </option>
                                         @endforeach
@@ -75,11 +73,10 @@
                                 </div>
 
                                 <div class="col-md-6" id="product_selection_div" style="display: none;">
-                                    <label for="product_id_input" class="form-label">Finished Product <span
-                                            class="text-danger">*</span></label>
+                                    <label for="product_id_input" class="form-label">{{ __('messages.finished_product') }} {!! __('messages.required_field_indicator') !!}</label>
                                     <select name="product_id" id="product_id_input"
                                         class="form-select @error('product_id') is-invalid @enderror">
-                                        <option value="">-- Select Product --</option>
+                                        <option value="">{{ __('messages.select_product_placeholder_finished') }}</option>
                                         @foreach ($products as $product)
                                             <option value="{{ $product->id }}"
                                                 {{ old('product_id') == $product->id ? 'selected' : '' }}>
@@ -93,16 +90,14 @@
                                 </div>
 
                                 <div class="col-md-6" id="quantity_unit_selection_div" style="display: none;">
-                                    <label for="quantity_input_unit_select" class="form-label">Input Quantity Unit <span
-                                            class="text-danger">*</span></label>
+                                    <label for="quantity_input_unit_select" class="form-label">{{ __('messages.input_quantity_unit') }} {!! __('messages.required_field_indicator') !!}</label>
                                     <select name="quantity_input_unit" id="quantity_input_unit_select" class="form-select">
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="quantity_input" class="form-label">Quantity <span
-                                            id="quantity_dynamic_unit_label"></span> <span
-                                            class="text-danger">*</span></label>
+                                    <label for="quantity_input" class="form-label">{{ __('messages.quantity') }} <span
+                                            id="quantity_dynamic_unit_label"></span> {!! __('messages.required_field_indicator') !!}</label>
                                     <input type="number" step="any" name="quantity" id="quantity_input"
                                         value="{{ old('quantity') }}"
                                         class="form-control @error('quantity') is-invalid @enderror" required
@@ -114,8 +109,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="movement_date" class="form-label">Adjustment Date <span
-                                            class="text-danger">*</span></label>
+                                    <label for="movement_date" class="form-label">{{ __('messages.adjustment_date') }} {!! __('messages.required_field_indicator') !!}</label>
                                     <input type="date" name="movement_date" id="movement_date"
                                         value="{{ old('movement_date', date('Y-m-d')) }}"
                                         class="form-control @error('movement_date') is-invalid @enderror" required>
@@ -125,7 +119,7 @@
                                 </div>
 
                                 <div class="col-12">
-                                    <label for="notes" class="form-label">Notes (Optional)</label>
+                                    <label for="notes" class="form-label">{{ __('messages.notes_optional') }}</label>
                                     <textarea name="notes" id="notes" rows="3" class="form-control @error('notes') is-invalid @enderror">{{ old('notes') }}</textarea>
                                     @error('notes')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -135,8 +129,8 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-4">
-                            <a href="{{ route('stock_adjustments') }}" class="btn btn-outline-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Save Adjustment</button>
+                            <a href="{{ route('stock_adjustments') }}" class="btn btn-outline-secondary">{{ __('messages.cancel_button') }}</a>
+                            <button type="submit" class="btn btn-primary">{{ __('messages.save_adjustment_button') }}</button>
                         </div>
                     </form>
                 </div>
@@ -175,8 +169,8 @@
                     productDiv.style.display = 'block';
                     productSelect.setAttribute('required', 'required');
                     quantityUnitSelectionDiv.style.display = 'none';
-                    quantityDynamicUnitLabel.textContent = '(Finished Product Units)';
-                    quantityHelpText.textContent = 'Enter the number of finished products made.';
+                    quantityDynamicUnitLabel.textContent = `({{ __('messages.finished_product') }} {{ __('messages.stock_unit').toLowerCase() }})`;
+                    quantityHelpText.textContent = `{{ __('messages.quantity_help_text_finished_product') }}`;
                 } else {
                     rawMaterialDiv.style.display = 'block';
                     rawMaterialSelect.setAttribute('required', 'required');
@@ -187,8 +181,8 @@
                             quantityUnitSelectionDiv.style.display = 'block';
                             quantityInputUnitSelect.setAttribute('required', 'required');
                             quantityInputUnitSelect.innerHTML = `
-                        <option value="stock_unit" ${ (quantityInputUnitSelect.value === 'stock_unit' || !quantityInputUnitSelect.value) ? 'selected' : '' }>${stockUnit || 'Stock Unit'}</option>
-                        <option value="usage_unit" ${ quantityInputUnitSelect.value === 'usage_unit' ? 'selected' : '' }>${usageUnit || 'Usage Unit'}</option>
+                        <option value="stock_unit" ${ (quantityInputUnitSelect.value === 'stock_unit' || !quantityInputUnitSelect.value) ? 'selected' : '' }>${stockUnit || '{{ __('messages.stock_unit') }}'}</option>
+                        <option value="usage_unit" ${ quantityInputUnitSelect.value === 'usage_unit' ? 'selected' : '' }>${usageUnit || '{{ __('messages.usage_unit') }}'}</option>
                     `;
                         } else if (stockUnit) {
                             quantityUnitSelectionDiv.style.display = 'none';
@@ -209,28 +203,29 @@
             function updateQuantityLabels() {
                 const selectedType = typeSelect.value;
                 if (selectedType === 'production_usage') {
-                    quantityDynamicUnitLabel.textContent = '(Finished Product Units)';
-                    quantityHelpText.textContent = 'Enter the number of finished products made.';
+                    quantityDynamicUnitLabel.textContent = `({{ __('messages.finished_product') }} {{ __('messages.stock_unit').toLowerCase() }})`;
+                    quantityHelpText.textContent = `{{ __('messages.quantity_help_text_finished_product') }}`;
                     return;
                 }
 
                 const selectedRawMaterialOption = rawMaterialSelect.options[rawMaterialSelect.selectedIndex];
                 const stockUnit = selectedRawMaterialOption ? selectedRawMaterialOption.getAttribute(
-                    'data-stock-unit') : 'Stock Unit';
+                    'data-stock-unit') : '{{ __('messages.stock_unit') }}';
                 const usageUnit = selectedRawMaterialOption ? selectedRawMaterialOption.getAttribute(
-                    'data-usage-unit') : 'Usage Unit';
+                    'data-usage-unit') : '{{ __('messages.usage_unit') }}';
 
                 if (quantityUnitSelectionDiv.style.display === 'block' && quantityInputUnitSelect.value) {
                     const selectedQuantityUnit = quantityInputUnitSelect.value;
                     const displayUnit = selectedQuantityUnit === 'stock_unit' ? stockUnit : usageUnit;
-                    quantityDynamicUnitLabel.textContent = `(in ${displayUnit})`;
-                    quantityHelpText.textContent = `Enter quantity in ${displayUnit}.`;
+                    quantityDynamicUnitLabel.textContent = `({{ __('messages.quantity_in_unit_label', ['unit_label' => 'dalam ' + displayUnit]) }})`;
+                    quantityHelpText.textContent = `{{ __('messages.quantity_help_text_default') }}`.replace('kuantitas.', `kuantitas dalam ${displayUnit}.`);
+
                 } else if (stockUnit) {
-                    quantityDynamicUnitLabel.textContent = `(in ${stockUnit})`;
-                    quantityHelpText.textContent = `Enter quantity in ${stockUnit}.`;
+                    quantityDynamicUnitLabel.textContent = `({{ __('messages.quantity_in_unit_label', ['unit_label' => 'dalam ' + stockUnit]) }})`;
+                     quantityHelpText.textContent = `{{ __('messages.quantity_help_text_default') }}`.replace('kuantitas.', `kuantitas dalam ${stockUnit}.`);
                 } else {
                     quantityDynamicUnitLabel.textContent = '';
-                    quantityHelpText.textContent = 'Select a raw material first.';
+                    quantityHelpText.textContent = '{{ __('messages.quantity_help_text_select_material') }}';
                 }
             }
 

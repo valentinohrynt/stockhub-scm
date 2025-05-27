@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Access Restricted')
+@section('title', __('messages.access_restricted_title'))
 
 @push('styles')
 <style>
@@ -63,23 +63,23 @@
             <div class="restricted-icon">
                 <i class="fas fa-hand-paper"></i>
             </div>
-            <h1 class="restricted-title">Access Denied</h1>
+            <h1 class="restricted-title">{{ __('messages.access_denied_title') }}</h1>
 
             @if (session('error'))
                 <p class="restricted-message">{{ session('error') }}</p>
             @else
                 <p class="restricted-message">
-                    Sorry, you do not have the necessary permissions to access this page.
-                    Please contact an administrator if you believe this is an error.
+                    {{ __('messages.access_denied_message_default') }}
+                    {{ __('messages.access_denied_message_contact_admin') }}
                 </p>
             @endif
 
             <div class="restricted-actions">
                 <a href="{{ route('home') }}" class="btn btn-primary">
-                    <i class="fas fa-home me-1"></i> Go to Homepage
+                    <i class="fas fa-home me-1"></i> {{ __('messages.go_to_homepage_button') }}
                 </a>
                 <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left me-1"></i> Go Back
+                    <i class="fas fa-arrow-left me-1"></i> {{ __('messages.go_back_button') }}
                 </a>
             </div>
         </div>

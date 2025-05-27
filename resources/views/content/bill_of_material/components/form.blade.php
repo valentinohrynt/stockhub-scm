@@ -1,5 +1,5 @@
 @php
-    $isEdit = isset($product);
+    $isEdit = isset($product); // In edit mode, $product is passed, not $billOfMaterial directly for the main product
     $route = $isEdit ? route('bill_of_materials.update', $product->slug) : route('bill_of_materials.store');
     $method = $isEdit ? 'PUT' : 'POST';
 @endphp
@@ -12,14 +12,14 @@
         @endif
 
         <div class="form-section">
-            <h5 class="section-title">Product</h5>
+            <h5 class="section-title">{{ __('messages.product') }}</h5>
             <div class="row">
                 <div class="col-md-12">
-                    <label for="product_id" class="form-label">Product Name <span class="text-danger">*</span></label>
+                    <label for="product_id" class="form-label">{{ __('messages.product_name') }} {!! __('messages.required_field_indicator') !!}</label>
                     <select name="product_id" id="product_id"
                         class="form-select @error('product_id') is-invalid @enderror" required
                         {{ $isEdit ? 'disabled' : '' }}>
-                        <option value="">Select a product...</option>
+                        <option value="">{{ __('messages.select_product_placeholder') }}</option>
                         @foreach ($products ?? ($allProducts ?? []) as $p)
                             <option value="{{ $p->id }}"
                                 {{ old('product_id', $isEdit && isset($product) ? $product->id : '') == $p->id ? 'selected' : '' }}>
@@ -39,9 +39,9 @@
 
         <div class="form-section">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="section-title mb-0">Recipe Ingredients</h5>
+                <h5 class="section-title mb-0">{{ __('messages.recipe_ingredients') }}</h5>
                 <button type="button" id="add-material" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>
-                    Add Material</button>
+                    {{ __('messages.add_material_button') }}</button>
             </div>
 
             <div id="raw-materials-wrapper">
@@ -50,11 +50,11 @@
                         <div class="raw-material-row mb-3 p-3 border rounded" data-row-index="{{ $index }}">
                             <div class="row g-2 align-items-center">
                                 <div class="col-lg-5 col-md-12">
-                                    <label class="form-label small d-md-none">Material</label>
+                                    <label class="form-label small d-md-none">{{ __('messages.material_name') }}</label>
                                     <select name="raw_materials[{{ $index }}][id]"
                                         class="form-select raw-material-select" data-index="{{ $index }}"
                                         required>
-                                        <option value="">Select raw material</option>
+                                        <option value="">{{ __('messages.select_raw_material_placeholder') }}</option>
                                         @foreach ($rawMaterials as $rm)
                                             <option value="{{ $rm->id }}" data-price="{{ $rm->unit_price }}"
                                                 data-stock-unit="{{ $rm->stock_unit }}"
@@ -67,7 +67,7 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-3 col-md-5 col-sm-6">
-                                    <label class="form-label small d-md-none">Quantity</label>
+                                    <label class="form-label small d-md-none">{{ __('messages.quantity') }}</label>
                                     <div class="input-group">
                                         <input type="number" step="any"
                                             name="raw_materials[{{ $index }}][quantity]"
@@ -75,20 +75,20 @@
                                             value="{{ old('raw_materials.' . $index . '.quantity', $material_item->quantity ?? 1) }}"
                                             required min="0.00001">
                                         <span
-                                            class="input-group-text usage-unit-display">{{ $material_item->rawMaterial->usage_unit ?? 'Usage Unit' }}</span>
+                                            class="input-group-text usage-unit-display">{{ $material_item->rawMaterial->usage_unit ?? __('messages.usage_unit') }}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-5 col-sm-6">
-                                    <label class="form-label small d-md-none">Cost</label>
+                                    <label class="form-label small d-md-none">{{ __('messages.cost') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text">Rp</span>
-                                        <input type="text" class="form-control cost-output" placeholder="Cost"
+                                        <input type="text" class="form-control cost-output" placeholder="{{ __('messages.cost') }}"
                                             readonly>
                                     </div>
                                 </div>
                                 <div class="col-lg-1 col-md-2 col-sm-12 text-end">
                                     <button type="button" class="btn btn-icon btn-danger remove-material"
-                                        title="Remove Material">
+                                        title="{{ __('messages.remove_material_button_title') }}">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -102,12 +102,12 @@
         <div class="form-section summary-section">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div class="total-cost-display">
-                    <strong>Total Base Cost:</strong>
+                    <strong>{{ __('messages.total_base_cost') }}</strong>
                     <span id="total-cost-value">Rp 0.00</span>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('bill_of_materials') }}" class="btn btn-outline-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">{{ $isEdit ? 'Update' : 'Create' }} Recipe</button>
+                    <a href="{{ route('bill_of_materials') }}" class="btn btn-outline-secondary">{{ __('messages.cancel_button') }}</a>
+                    <button type="submit" class="btn btn-primary">{{ $isEdit ? __('messages.update_recipe_button') : __('messages.create_recipe_button') }}</button>
                 </div>
             </div>
         </div>
@@ -166,10 +166,10 @@
                         if (!isNaN(cost)) {
                             totalRecipeCost += cost;
                         }
-                        usageUnitDisplay.textContent = materialInfo.usage_unit || 'Usage Unit';
+                        usageUnitDisplay.textContent = materialInfo.usage_unit || '{{ __('messages.usage_unit') }}';
                     } else {
                         costOutput.value = '0.00';
-                        usageUnitDisplay.textContent = 'Usage Unit';
+                        usageUnitDisplay.textContent = '{{ __('messages.usage_unit') }}';
                     }
                 });
                 totalCostDisplay.textContent = `Rp ${numberFormatter.format(totalRecipeCost)}`;
@@ -191,7 +191,7 @@
             }
 
             function createRowHtml(index) {
-                let optionsHtml = '<option value="">Select raw material</option>';
+                let optionsHtml = '<option value="">{{ __('messages.select_raw_material_placeholder') }}</option>';
                 for (const id in rawMaterialsData) {
                     const mat = rawMaterialsData[id];
                     optionsHtml += `
@@ -215,17 +215,17 @@
             <div class="col-lg-3 col-md-5 col-sm-6">
                 <div class="input-group">
                     <input type="number" step="any" name="raw_materials[${index}][quantity]" class="form-control quantity-input" placeholder="0" value="1" required min="0.00001">
-                    <span class="input-group-text usage-unit-display">Usage Unit</span>
+                    <span class="input-group-text usage-unit-display">{{ __('messages.usage_unit') }}</span>
                 </div>
             </div>
             <div class="col-lg-3 col-md-5 col-sm-6">
                 <div class="input-group">
                     <span class="input-group-text">Rp</span>
-                    <input type="text" class="form-control cost-output" placeholder="Cost" readonly>
+                    <input type="text" class="form-control cost-output" placeholder="{{ __('messages.cost') }}" readonly>
                 </div>
             </div>
             <div class="col-lg-1 col-md-2 col-sm-12 text-end">
-                <button type="button" class="btn btn-icon btn-danger remove-material" title="Remove Material"><i class="fas fa-trash"></i></button>
+                <button type="button" class="btn btn-icon btn-danger remove-material" title="{{ __('messages.remove_material_button_title') }}"><i class="fas fa-trash"></i></button>
             </div>
         </div>
     </div>`;
@@ -269,7 +269,7 @@
             form.addEventListener("submit", function(e) {
                 const selects = Array.from(wrapper.querySelectorAll('.raw-material-select'));
                 if (selects.length === 0) {
-                    alert("Please add at least one raw material to the recipe.");
+                    alert("{{ __('messages.bom_form_alert_no_material') }}");
                     e.preventDefault();
                     return;
                 }
@@ -288,13 +288,13 @@
                     }
                 });
                 if (hasEmptySelection) {
-                    alert("Please select a raw material for all rows.");
+                    alert("{{ __('messages.bom_form_alert_empty_selection') }}");
                     e.preventDefault();
                     return;
                 }
                 if (hasDuplicate) {
                     alert(
-                        "Duplicate raw materials selected. Please choose unique ingredients for the recipe."
+                        "{{ __('messages.bom_form_alert_duplicate_material') }}"
                     );
                     e.preventDefault();
                     return;

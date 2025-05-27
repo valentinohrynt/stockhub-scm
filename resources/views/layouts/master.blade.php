@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id"> 
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Cafe System')</title>
+    <title>@yield('title', __('messages.app_name'))</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -12,7 +12,7 @@
 
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/modern.css') }}" rel="stylesheet">
-    
+
     <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
 
     <style>
@@ -29,9 +29,11 @@
             align-items: center;
             transition: opacity 0.75s ease;
         }
+
         #preloader.hidden {
             opacity: 0;
         }
+
         #app-content.visible {
             visibility: visible !important;
         }
@@ -43,7 +45,9 @@
 <body class="d-flex flex-column min-vh-100">
 
     <div id="preloader">
-        <dotlottie-player src="https://lottie.host/297b2225-3103-416e-99de-95b8c028ce87/m7IOdtiFaR.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
+        <dotlottie-player src="https://lottie.host/297b2225-3103-416e-99de-95b8c028ce87/m7IOdtiFaR.lottie"
+            background="transparent" speed="1" style="width: 300px; height: 300px" loop
+            autoplay></dotlottie-player>
     </div>
 
     <div id="app-content" style="visibility: hidden;">
@@ -56,7 +60,7 @@
                     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                         <i class="bi bi-check-circle me-1"></i>
                         {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
                     </div>
                 @endif
 
@@ -64,7 +68,7 @@
                     <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                         <i class="bi bi-exclamation-triangle me-1"></i>
                         {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
                     </div>
                 @endif
 
@@ -76,10 +80,10 @@
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
                     </div>
                 @endif
-                
+
                 @yield('content')
 
             </div>
@@ -101,7 +105,7 @@
                     form.addEventListener('submit', function() {
                         submitButton.disabled = true;
                         submitButton.innerHTML =
-                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> {{ __('messages.processing') }}'; // Using lang file
                     });
                 }
             }
@@ -112,7 +116,7 @@
         window.addEventListener('load', function() {
             const preloader = document.getElementById('preloader');
             const mainContent = document.getElementById('app-content');
-            
+
             preloader.classList.add('hidden');
             mainContent.classList.add('visible');
 
@@ -121,7 +125,7 @@
             }, 750);
         });
     </script>
-    
+
     @stack('scripts')
 </body>
 

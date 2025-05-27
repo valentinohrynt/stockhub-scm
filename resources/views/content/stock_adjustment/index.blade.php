@@ -1,15 +1,15 @@
 @extends('layouts.master')
 
-@section('title', 'Stock Movement History')
+@section('title', __('messages.stock_adjustment_history_title'))
 
 @section('content')
     <div class="container py-4">
         <div class="modern-container">
             <div class="header-section">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h2 class="page-title mb-0">Stock Movement History</h2>
+                    <h2 class="page-title mb-0">{{ __('messages.stock_adjustment_history_title') }}</h2>
                     <a href="{{ route('stock_adjustments.create') }}" class="add-btn">
-                        <i class="fas fa-plus"></i> Create New Adjustment
+                        <i class="fas fa-plus"></i> {{ __('messages.create_new_adjustment_button') }}
                     </a>
                 </div>
             </div>
@@ -19,39 +19,30 @@
                     <form action="{{ route('stock_adjustments') }}" method="GET">
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <label for="search_raw_material" class="form-label small">Raw Material Name</label>
+                                <label for="search_raw_material" class="form-label small">{{ __('messages.raw_material_name_label_filter') }}</label>
                                 <input type="text" class="form-control" name="search_raw_material"
-                                    placeholder="Search raw material name..." value="{{ request('search_raw_material') }}">
+                                    placeholder="{{ __('messages.search_raw_material_name_placeholder') }}" value="{{ request('search_raw_material') }}">
                             </div>
                             <div class="col-md-2">
-                                <label for="type" class="form-label small">Movement Type</label>
+                                <label for="type" class="form-label small">{{ __('messages.movement_type') }}</label>
                                 <select class="form-select" name="type">
-                                    <option value="">All Types</option>
-                                    <option value="addition" {{ request('type') == 'addition' ? 'selected' : '' }}>Addition
-                                    </option>
-                                    <option value="deduction" {{ request('type') == 'deduction' ? 'selected' : '' }}>
-                                        Deduction</option>
-                                    <option value="initial_stock"
-                                        {{ request('type') == 'initial_stock' ? 'selected' : '' }}>Initial Stock</option>
-                                    <option value="correction" {{ request('type') == 'correction' ? 'selected' : '' }}>
-                                        Correction</option>
-                                    <option value="production_usage"
-                                        {{ request('type') == 'production_usage' ? 'selected' : '' }}>Production Usage
-                                    </option>
-                                    <option value="breakage" {{ request('type') == 'breakage' ? 'selected' : '' }}>Breakage
-                                    </option>
-                                    <option value="manual_adjustment"
-                                        {{ request('type') == 'manual_adjustment' ? 'selected' : '' }}>Manual Adjustment
-                                    </option>
+                                    <option value="">{{ __('messages.all_types') }}</option>
+                                    <option value="addition" {{ request('type') == 'addition' ? 'selected' : '' }}>{{ __('messages.stock_addition') }}</option>
+                                    <option value="deduction" {{ request('type') == 'deduction' ? 'selected' : '' }}>{{ __('messages.stock_deduction') }}</option>
+                                    <option value="initial_stock" {{ request('type') == 'initial_stock' ? 'selected' : '' }}>{{ __('messages.initial_stock') }}</option>
+                                    <option value="correction" {{ request('type') == 'correction' ? 'selected' : '' }}>{{ __('messages.correction') }}</option>
+                                    <option value="production_usage" {{ request('type') == 'production_usage' ? 'selected' : '' }}>{{ __('messages.production_usage') }}</option>
+                                    <option value="breakage" {{ request('type') == 'breakage' ? 'selected' : '' }}>{{ __('messages.breakage') }}</option>
+                                    <option value="manual_adjustment" {{ request('type') == 'manual_adjustment' ? 'selected' : '' }}>{{ __('messages.manual_adjustment') }}</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label small">Start Date</label>
+                                <label class="form-label small">{{ __('messages.start_date') }}</label>
                                 <input type="date" name="start_date" class="form-control"
                                     value="{{ request('start_date') }}">
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label small">End Date</label>
+                                <label class="form-label small">{{ __('messages.end_date') }}</label>
                                 <input type="date" name="end_date" class="form-control"
                                     value="{{ request('end_date') }}">
                             </div>
@@ -74,14 +65,14 @@
                         <table class="table modern-table align-middle">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Raw Material</th>
-                                    <th>Type</th>
-                                    <th class="text-center">Quantity (Stock Unit)</th>
-                                    <th>Unit Price at Movement (per Stock Unit)</th>
-                                    <th>Total Value</th>
-                                    <th>By</th>
-                                    <th>Notes</th>
+                                    <th>{{ __('messages.adjustment_date') }}</th>
+                                    <th>{{ __('messages.raw_material_name') }}</th>
+                                    <th>{{ __('messages.movement_type') }}</th>
+                                    <th class="text-center">{{ __('messages.quantity_stock_unit') }}</th>
+                                    <th>{{ __('messages.unit_price_at_movement_per_stock_unit') }}</th>
+                                    <th>{{ __('messages.total_value') }}</th>
+                                    <th>{{ __('messages.by_user') }}</th>
+                                    <th>{{ __('messages.notes') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -100,7 +91,7 @@
                                         <td>
                                             <span
                                                 class="badge bg-{{ $movement->quantity > 0 ? 'success' : ($movement->quantity < 0 ? 'danger' : 'secondary') }}-subtle">
-                                                {{ Str::title(str_replace('_', ' ', $movement->type)) }}
+                                                {{ Str::title(str_replace('_', ' ', __('messages.' . $movement->type, [], 'id'))) }}
                                             </span>
                                         </td>
                                         <td
@@ -125,7 +116,7 @@
                 @else
                     <div class="alert alert-info text-center">
                         <i class="fas fa-info-circle me-2"></i>
-                        No stock movement history found.
+                        {{ __('messages.no_stock_movement_history') }}
                     </div>
                 @endif
             </div>

@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Supplier Details: ' . $supplier->name)
+@section('title', __('messages.supplier_details_title', ['name' => $supplier->name]))
 
 @section('content')
     <div class="container py-4">
@@ -12,22 +12,22 @@
                         <div class="header-meta">
                             @if (isset($supplier->is_active))
                                 <span class="badge {{ $supplier->is_active ? 'bg-success-subtle' : 'bg-danger-subtle' }}">
-                                    {{ $supplier->is_active ? 'Active' : 'Inactive' }}
+                                    {{ $supplier->is_active ? __('messages.active') : __('messages.inactive') }}
                                 </span>
                             @endif
                         </div>
                     </div>
                     <div class="header-actions">
                         <a href="{{ route('suppliers') }}" class="btn btn-outline-secondary"><i
-                                class="fas fa-arrow-left me-1"></i> Back</a>
+                                class="fas fa-arrow-left me-1"></i> {{ __('messages.back_button') }}</a>
                         @if(Auth::check() && Auth::user()->role && strtolower(Auth::user()->role->name) != 'staff')
                             <a href="{{ route('suppliers.edit', $supplier->slug) }}" class="btn btn-primary"><i
-                                    class="fas fa-edit me-1"></i> Edit</a>
+                                    class="fas fa-edit me-1"></i> {{ __('messages.edit_button') }}</a>
                             <form method="POST" action="{{ route('suppliers.delete', $supplier->slug) }}"
-                                onsubmit="return confirm('Are you sure you want to delete this Supplier? This action cannot be undone.');" style="display:inline;">
+                                onsubmit="return confirm('{{ __('messages.confirm_delete_action_cannot_be_undone', ['item' => Str::lower(__('messages.nav_suppliers'))]) }}');" style="display:inline;">
                                 @csrf
                                 @method('PUT')
-                                <button type="submit" class="btn btn-danger"><i class="fas fa-trash me-1"></i> Delete</button>
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-trash me-1"></i> {{ __('messages.delete_button') }}</button>
                             </form>
                         @endif
                     </div>
@@ -38,28 +38,28 @@
                 <div class="row g-4">
                     <div class="col-lg-7">
                         <div class="content-block mb-4">
-                            <h5 class="content-block-title">Contact Information</h5>
+                            <h5 class="content-block-title">{{ __('messages.contact_information') }}</h5>
                             <ul class="info-list">
-                                <li><span class="label">Contact Person</span> <span
+                                <li><span class="label">{{ __('messages.contact_person') }}</span> <span
                                         class="value">{{ $supplier->contact_person ?: 'N/A' }}</span></li>
-                                <li><span class="label">Phone</span> <span
+                                <li><span class="label">{{ __('messages.phone') }}</span> <span
                                         class="value">{{ $supplier->phone ?: 'N/A' }}</span></li>
-                                <li><span class="label">Email</span> <span
+                                <li><span class="label">{{ __('messages.email') }}</span> <span
                                         class="value">{{ $supplier->email ?: 'N/A' }}</span></li>
                             </ul>
                         </div>
                         <div class="content-block">
-                            <h5 class="content-block-title">Address Details</h5>
+                            <h5 class="content-block-title">{{ __('messages.address_details') }}</h5>
                             <ul class="info-list">
-                                <li><span class="label">Full Address</span> <span
+                                <li><span class="label">{{ __('messages.full_address') }}</span> <span
                                         class="value">{{ $supplier->address ?: 'N/A' }}</span></li>
-                                <li><span class="label">City</span> <span
+                                <li><span class="label">{{ __('messages.city') }}</span> <span
                                         class="value">{{ $supplier->city ?: 'N/A' }}</span></li>
-                                <li><span class="label">State</span> <span
+                                <li><span class="label">{{ __('messages.state_province') }}</span> <span
                                         class="value">{{ $supplier->state ?: 'N/A' }}</span></li>
-                                <li><span class="label">ZIP Code</span> <span
+                                <li><span class="label">{{ __('messages.zip_postal_code') }}</span> <span
                                         class="value">{{ $supplier->zip_code ?: 'N/A' }}</span></li>
-                                <li><span class="label">Country</span> <span
+                                <li><span class="label">{{ __('messages.country') }}</span> <span
                                         class="value">{{ $supplier->country ?: 'N/A' }}</span></li>
                             </ul>
                         </div>
@@ -68,13 +68,13 @@
                     <div class="col-lg-5">
                         @if ($supplier->rawMaterial && $supplier->rawMaterial->count() > 0)
                             <div class="content-block mb-4">
-                                <h5 class="content-block-title">Supplied Raw Materials</h5>
+                                <h5 class="content-block-title">{{ __('messages.supplied_raw_materials') }}</h5>
                                 <div class="table-responsive">
                                     <table class="table modern-table table-sm">
                                         <thead>
                                             <tr>
-                                                <th>Material Name</th>
-                                                <th class="text-end">Unit Price</th>
+                                                <th>{{ __('messages.material_name') }}</th>
+                                                <th class="text-end">{{ __('messages.unit_price') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -92,11 +92,11 @@
                             </div>
                         @endif
                         <div class="content-block">
-                            <h5 class="content-block-title">Record Timestamps</h5>
+                            <h5 class="content-block-title">{{ __('messages.record_timestamps') }}</h5>
                             <ul class="info-list">
-                                <li><span class="label">Created At</span> <span
+                                <li><span class="label">{{ __('messages.created_at') }}</span> <span
                                         class="value">{{ $supplier->created_at->format('d M Y, H:i') }}</span></li>
-                                <li><span class="label">Last Updated</span> <span
+                                <li><span class="label">{{ __('messages.updated_at') }}</span> <span
                                         class="value">{{ $supplier->updated_at->format('d M Y, H:i') }}</span></li>
                             </ul>
                         </div>

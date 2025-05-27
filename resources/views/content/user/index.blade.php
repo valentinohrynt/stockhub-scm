@@ -1,16 +1,16 @@
 @extends('layouts.master')
 
-@section('title', 'User List')
+@section('title', __('messages.user_list_title'))
 
 @section('content')
     <div class="container py-4">
         <div class="modern-container">
             <div class="header-section">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h2 class="page-title mb-0">User List</h2>
+                    <h2 class="page-title mb-0">{{ __('messages.user_list_title') }}</h2>
                     @if(auth()->user()->role->name == 'admin')
                         <a href="{{ route('users.create') }}" class="add-btn">
-                            <i class="fas fa-plus"></i> Add User
+                            <i class="fas fa-plus"></i> {{ __('messages.add_user_button') }}
                         </a>
                     @endif
                 </div>
@@ -25,14 +25,14 @@
                                     <span class="input-group-text bg-white border-end-0"><i
                                             class="fas fa-search text-muted"></i></span>
                                     <input type="text" class="form-control border-start-0" name="search"
-                                        placeholder="Search by name or email..." value="{{ request('search') }}"
+                                        placeholder="{{ __('messages.search_by_user_details') }}" value="{{ request('search') }}"
                                         aria-label="Search">
                                 </div>
                             </div>
 
                             <div class="col-md-3">
-                                <select class="form-select" name="role_id" aria-label="Filter by Role">
-                                    <option value="">All Roles</option>
+                                <select class="form-select" name="role_id" aria-label="{{ __('messages.role') }}">
+                                    <option value="">{{ __('messages.all_roles') }}</option>
                                     @foreach ($roles as $role)
                                         <option value="{{ $role->id }}"
                                             {{ request('role_id') == $role->id ? 'selected' : '' }}>
@@ -45,9 +45,9 @@
                             <div class="col-md-4">
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-primary flex-fill" type="submit"><i
-                                            class="fas fa-filter me-1"></i> Filter</button>
-                                    <a href="{{ route('users') }}" class="btn btn-outline-secondary flex-fill"><i {{-- Menggunakan route('users') --}}
-                                            class="fas fa-undo me-1"></i> Reset</a>
+                                            class="fas fa-filter me-1"></i> {{ __('messages.filter_button') }}</button>
+                                    <a href="{{ route('users') }}" class="btn btn-outline-secondary flex-fill"><i
+                                            class="fas fa-undo me-1"></i> {{ __('messages.reset_button') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -62,11 +62,11 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Joined</th>
-                                    <th class="text-end">Actions</th>
+                                    <th>{{ __('messages.name') }}</th>
+                                    <th>{{ __('messages.email') }}</th>
+                                    <th>{{ __('messages.role') }}</th>
+                                    <th>{{ __('messages.joined_on') }}</th>
+                                    <th class="text-end">{{ __('messages.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -83,11 +83,11 @@
                                             <div class="d-flex justify-content-end gap-2">
                                                 <a href="{{ route('users.show', $user_data->id) }}"
                                                     class="btn btn-sm btn-outline-primary"><i class="fas fa-eye me-1"></i>
-                                                    View</a>
+                                                    {{ __('messages.view_button') }}</a>
                                                 @if(auth()->user()->role->name == 'admin')
                                                     <a href="{{ route('users.edit', $user_data->id) }}"
                                                         class="btn btn-sm btn-outline-secondary"><i
-                                                            class="fas fa-edit me-1"></i> Edit</a>
+                                                            class="fas fa-edit me-1"></i> {{ __('messages.edit_button') }}</a>
                                                 @endif
                                             </div>
                                         </td>
@@ -103,7 +103,7 @@
                 @else
                     <div class="alert alert-info text-center">
                         <i class="fas fa-info-circle me-2"></i>
-                        No Users found matching your criteria.
+                        {{ __('messages.no_users_criteria') }}
                     </div>
                 @endif
             </div>

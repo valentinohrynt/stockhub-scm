@@ -92,6 +92,14 @@
                         @foreach ($rawMaterials as $raw)
                             <div class="col-md-6 col-lg-4">
                                 <div class="product-card shadow-sm h-100">
+                                    @if ($product->image_path)
+                                        <img src="{{ Storage::url($product->image_path) }}" class="card-img-top"
+                                            alt="{{ $product->name }}">
+                                    @else
+                                        <div class="card-img-top-placeholder">
+                                            <i class="fas fa-box-open"></i>
+                                        </div>
+                                    @endif
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <h5 class="card-title mb-0" title="{{ $raw->name }}">

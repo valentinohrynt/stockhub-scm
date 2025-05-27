@@ -114,7 +114,7 @@ return [
 
 
     // Raw Materials
-   'raw_material_list' => 'Daftar Bahan Baku',
+    'raw_material_list' => 'Daftar Bahan Baku',
     'add_raw_material' => 'Tambah Bahan Baku',
     'edit_raw_material' => 'Ubah Bahan Baku',
     'raw_material_details_for' => 'Bahan Baku: :name',
@@ -167,6 +167,18 @@ return [
     'view_raw_material' => 'Lihat Bahan Baku',
     'image_preview' => 'Pratinjau Gambar',
     'upload_raw_material_image' => 'Unggah Gambar Bahan Baku',
+    'recalculate_analysis_button' => 'Hitung Ulang Analisis',
+    'recalculate_analysis_confirm' => 'Apakah Anda yakin ingin menghitung ulang analisis untuk bahan baku ini? Ini akan memperbarui semua nilai terkait seperti rata-rata penggunaan harian, stok pengaman, dan titik sinyal.',
+    'recalculate_analysis_success' => 'Analisis bahan baku berhasil dihitung ulang.',
+    'search_by_raw_material_name' => 'Cari berdasarkan nama bahan baku...',
+    'all_raw_material_statuses' => 'Semua Status',
+    'active_raw_materials' => 'Bahan Baku Aktif',
+    'inactive_raw_materials' => 'Bahan Baku Tidak Aktif',
+    'no_raw_materials_criteria' => 'Bahan baku tidak ditemukan sesuai kriteria Anda.',
+    'order_status' => 'Status Pesanan',
+    'needs_order'=> 'Perlu Pemesanan',
+    'stock_ok' => 'Stok Oke',
+    'raw_materials' => 'Bahan Baku',
 
 
     // Suppliers

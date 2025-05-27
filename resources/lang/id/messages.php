@@ -179,7 +179,8 @@ return [
     'needs_order'=> 'Perlu Pemesanan',
     'stock_ok' => 'Stok Oke',
     'raw_materials' => 'Bahan Baku',
-
+    'avg_usage_x_safety_days' => 'Rata-rata Penggunaan x Hari Stok Pengaman',
+    'avg_usage_x_lead_time_plus_safety_stock' => 'Rata-rata Penggunaan x Waktu Tunggu + Stok Pengaman',
 
     // Suppliers
     'supplier_list' => 'Daftar Pemasok',

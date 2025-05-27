@@ -40,7 +40,7 @@
                                     onsubmit="return confirm('Are you sure you want to deactivate this Bill of Material?');"
                                     style="display:inline;">
                                     @csrf
-                                    @method('DELETE') {{-- Sesuai route:web.php Anda menggunakan delete untuk BoM --}}
+                                    @method('DELETE')
                                     <button type="submit" class="btn btn-danger">
                                         <i class="fas fa-trash me-1"></i> Deactivate
                                     </button>

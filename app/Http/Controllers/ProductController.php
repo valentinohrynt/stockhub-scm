@@ -6,7 +6,7 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Storage; // Keep if used by trait
 use App\Traits\HandlesImageUploads;
 
 class ProductController extends Controller
@@ -15,8 +15,14 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $query = Product::query()->with(['category', 'billOfMaterial.rawMaterial']);
-        
+        $query = Product::query()->with([
+            'category',
+            'billOfMaterial' => function ($query) {
+
+                $query->where('is_active', true)->with('rawMaterial');
+            }
+        ]);
+
         $currentStatusForView = '1';
 
         if ($request->filled('search')) {
@@ -27,46 +33,70 @@ class ProductController extends Controller
             $query->where('category_id', $request->input('category'));
         }
 
-        if (!$request->has('status')) {
-            $query->where('is_active', true);
+        if ($request->input('status') === 'all') {
+            $currentStatusForView = 'all';
+        } elseif ($request->input('status') === '0') {
+            $query->where('is_active', false);
+            $currentStatusForView = '0';
         } else {
-            $statusParamValue = $request->input('status');
-            if ($statusParamValue === 'all') {
-                $currentStatusForView = 'all';
-            } elseif ($statusParamValue === '0' || $statusParamValue === '1') {
-                $query->where('is_active', $statusParamValue === '1');
-                $currentStatusForView = $statusParamValue;
-            } else {
-                $query->where('is_active', true);
-            }
+            $query->where('is_active', true);
+            $currentStatusForView = '1';
         }
-        
-        $products = $query->latest()->paginate(18)->withQueryString();
+
+        $products = $query->latest('products.created_at')->paginate(18)->withQueryString();
 
         foreach ($products as $product) {
-            $boms = $product->billOfMaterial;
-            $product->base_price = $boms->sum('total_cost');
+            $activeBoms = $product->billOfMaterial->where('is_active', true);
+
 
             $possibleUnits = PHP_INT_MAX;
-            if ($boms->isEmpty()) {
+
+            if ($activeBoms->isEmpty()) {
                 $possibleUnits = 0;
             } else {
-                foreach ($boms as $bom) {
-                    $availableStock = $bom->rawMaterial->stock ?? 0;
-                    $requiredQty = $bom->quantity;
-                    if ($requiredQty > 0) {
-                        $possibleUnits = min($possibleUnits, floor($availableStock / $requiredQty));
+                foreach ($activeBoms as $bomItem) {
+                    $rawMaterial = $bomItem->rawMaterial;
+
+                    if (!$rawMaterial || !$rawMaterial->is_active) {
+                        $possibleUnits = 0; 
+                        break;
+                    }
+
+                    $requiredQtyInUsageUnit = (float)$bomItem->quantity;
+
+                    if ($requiredQtyInUsageUnit <= 0) {
+                        continue;
+                    }
+
+                    $availableStockInStockUnit = (float)($rawMaterial->stock ?? 0);
+                    $conversionFactor = (float)($rawMaterial->conversion_factor ?? 0);
+
+                    $availableStockInUsageUnit = 0;
+                    if ($rawMaterial->stock_unit === $rawMaterial->usage_unit) {
+                        $availableStockInUsageUnit = $availableStockInStockUnit;
+                    } elseif ($conversionFactor > 0) {
+                        $availableStockInUsageUnit = $availableStockInStockUnit * $conversionFactor;
+                    } else {
+                        $possibleUnits = 0;
+                        break; 
+                    }
+
+                    if ($requiredQtyInUsageUnit > 0) {
+                        $unitsForThisMaterial = floor($availableStockInUsageUnit / $requiredQtyInUsageUnit);
+                        $possibleUnits = min($possibleUnits, $unitsForThisMaterial);
                     }
                 }
             }
+
             $product->possible_units = ($possibleUnits === PHP_INT_MAX) ? 0 : $possibleUnits;
         }
+
         $categories = Category::where('type', 'product')->orderBy('name')->get();
 
         return view('content.product.index', [
             'products' => $products,
             'categories' => $categories,
-            'currentStatus' => $currentStatusForView 
+            'currentStatus' => $currentStatusForView
         ]);
     }
 
@@ -84,28 +114,22 @@ class ProductController extends Controller
             'selling_price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'image_path' => 'nullable|image',
-            'slug' => 'nullable|string|max:255',
             'is_active' => 'boolean',
         ]);
 
         $validatedData['code'] = strtoupper(Str::random(8));
 
-        $product = Product::create($validatedData);
+        $product = new Product($validatedData);
 
-        // // Local image handling
-        // if ($request->hasFile('image_path')) {
-        //     $imageName = handleProductImage($request->file('image_path'), $product->code);
+        $product->is_active = $request->has('is_active') ? (bool)$request->input('is_active') : true;
 
-        //     if ($imageName) {
-        //         $product->update(['image_path' => $imageName]);
-        //     }
-        // }
 
-        // S3 image handling
         $imagePath = $this->handleImageUpload($request);
         if ($imagePath) {
-            $product->update(['image_path' => $imagePath]);
+            $product->image_path = $imagePath;
         }
+        $product->save();
+
 
         return redirect()->route('products')->with('success', 'Product created successfully.');
     }
@@ -126,34 +150,24 @@ class ProductController extends Controller
             'selling_price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'image_path' => 'nullable|image',
-            'slug' => 'nullable|string|max:255',
             'is_active' => 'boolean',
         ]);
 
         $product = Product::where('slug', $slug)->firstOrFail();
 
-        $product->update($validatedData);
+        if ($request->hasFile('image_path')) {
+            $imagePath = $this->handleImageUpload($request, $product);
+            $validatedData['image_path'] = $imagePath;
+        } else {
+            $validatedData['image_path'] = $product->image_path;
+        }
+        
+        $product->fill($validatedData);
+        $product->is_active = $request->has('is_active') ? (bool)$request->input('is_active') : $product->is_active; 
+        $product->save();
 
-        // // Local image handling
-        // if ($request->hasFile('image_path')) {
-        //     if ($product->image_path && Storage::exists('public/product_img/' . $product->image_path)) {
-        //         Storage::delete('public/product_img/' . $product->image_path);
-        //     }
 
-        //     $imageName = handleProductImage($request->file('image_path'), $product->code);
-
-        //     if ($imageName) {
-        //         $product->update(['image_path' => $imageName]);
-        //     }
-        // }
-
-        // S3 image handling
-        $imagePath = $this->handleImageUpload($request, $product);
-
-        $validatedData['image_path'] = $imagePath;
-        $product->update($validatedData);
-
-        return redirect()->route('products')->with('success', 'Product updated successfully.');
+        return redirect()->route('products.show', $product->slug)->with('success', 'Product updated successfully.');
     }
 
 
@@ -163,12 +177,54 @@ class ProductController extends Controller
         $product->is_active = false;
         $product->save();
 
-        return redirect()->route('products')->with('success', 'Product deleted successfully.');
+        if ($product->billOfMaterial()->where('is_active', true)->exists()) {
+            $product->billOfMaterial()->update(['is_active' => false]);
+        }
+
+        return redirect()->route('products')->with('success', 'Product and its active BOM (if any) deactivated successfully.');
     }
 
     public function show($slug)
     {
-        $product = Product::where('slug', $slug)->firstOrFail();
+        $product = Product::where('slug', $slug)
+            ->with([
+                'category',
+                'billOfMaterial' => function ($query) {
+                    $query->where('is_active', true)->with('rawMaterial');
+                }
+            ])
+            ->firstOrFail();
+        
+        $activeBoms = $product->billOfMaterial->where('is_active', true);
+        $possibleUnits = PHP_INT_MAX;
+        if ($activeBoms->isEmpty()) {
+            $possibleUnits = 0;
+        } else {
+            foreach ($activeBoms as $bomItem) {
+                $rawMaterial = $bomItem->rawMaterial;
+                if (!$rawMaterial || !$rawMaterial->is_active) {
+                    $possibleUnits = 0; break;
+                }
+                $requiredQtyInUsageUnit = (float)$bomItem->quantity;
+                if ($requiredQtyInUsageUnit <= 0) continue;
+
+                $availableStockInStockUnit = (float)($rawMaterial->stock ?? 0);
+                $conversionFactor = (float)($rawMaterial->conversion_factor ?? 0);
+                $availableStockInUsageUnit = 0;
+
+                if ($rawMaterial->stock_unit === $rawMaterial->usage_unit) {
+                    $availableStockInUsageUnit = $availableStockInStockUnit;
+                } elseif ($conversionFactor > 0) {
+                    $availableStockInUsageUnit = $availableStockInStockUnit * $conversionFactor;
+                } else {
+                    $possibleUnits = 0; break;
+                }
+                $unitsForThisMaterial = floor($availableStockInUsageUnit / $requiredQtyInUsageUnit);
+                $possibleUnits = min($possibleUnits, $unitsForThisMaterial);
+            }
+        }
+        $product->possible_units = ($possibleUnits === PHP_INT_MAX) ? 0 : $possibleUnits;
+
 
         return view('content.product.show', compact('product'));
     }
@@ -181,5 +237,4 @@ class ProductController extends Controller
 
         return redirect()->route('products')->with('success', 'Product status updated successfully.');
     }
-    
 }

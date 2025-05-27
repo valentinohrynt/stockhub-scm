@@ -556,7 +556,7 @@
 .content-section .table-responsive {
     border: 1px solid var(--border-light);
     border-radius: 12px;
-    overflow: hidden;
+    overflow: auto !important;
     background-color: var(--surface);
 }
 

@@ -82,7 +82,7 @@ class StockAdjustmentController extends Controller
             $this->checkJitSignalForMaterial($updatedRawMaterial);
 
             return redirect()->route('stock_adjustments')
-                             ->with('success', "Penyesuaian stok berhasil disimpan. " . $analyticsMessage);
+                             ->with('success', "Penyesuaian stok berhasil disimpan." );
 
         } catch (\Exception $e) {
             Log::error("Error during stock adjustment or analytics recalculation: " . $e->getMessage());

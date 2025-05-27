@@ -181,6 +181,7 @@ return [
     'raw_materials' => 'Bahan Baku',
     'avg_usage_x_safety_days' => 'Rata-rata Penggunaan x Hari Stok Pengaman',
     'avg_usage_x_lead_time_plus_safety_stock' => 'Rata-rata Penggunaan x Waktu Tunggu + Stok Pengaman',
+    'image'=> 'Gambar',
 
     // Suppliers
     'supplier_list' => 'Daftar Pemasok',

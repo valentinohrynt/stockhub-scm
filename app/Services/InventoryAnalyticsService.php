@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\RawMaterial;
 use App\Models\StockMovementLog;
 use App\Models\JitNotification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class InventoryAnalyticsService
@@ -25,12 +26,12 @@ class InventoryAnalyticsService
         $notificationsTriggered = 0;
 
         foreach ($materials as $material) {
-            $totalConsumed = StockMovementLog::where('raw_material_id', $material->id)
-                ->whereIn('type', ['deduction', 'production_usage'])
+            $totalConsumedAbsolute = StockMovementLog::where('raw_material_id', $material->id)
+                ->whereIn('type', ['deduction', 'production_usage', 'breakage']) 
                 ->where('movement_date', '>=', now()->subDays($calculationPeriodDays)->toDateString())
-                ->sum('quantity');
-            
-            $newAverage = $totalConsumed > 0 ? $totalConsumed / $calculationPeriodDays : 0;
+                ->sum(DB::raw('ABS(quantity)')); 
+
+            $newAverage = $totalConsumedAbsolute > 0 ? $totalConsumedAbsolute / $calculationPeriodDays : 0;
 
             $safetyStockDays = $material->safety_stock_days ?? 0;
             $calculatedSafetyStock = $newAverage * $safetyStockDays;
@@ -53,13 +54,16 @@ class InventoryAnalyticsService
                     [
                         'raw_material_id' => $updatedMaterial->id,
                         'status' => 'unread',
+                        // 'message' => "STOK HABIS: Stok {$updatedMaterial->name} kritis ({$updatedMaterial->stock} / {$updatedMaterial->signal_point}) setelah pembaruan analitik. Segera pesan ulang {$updatedMaterial->replenish_quantity} unit." 
                     ],
                     [
-                        'message' => "STOK HABIS: Stok {$updatedMaterial->name} kritis ({$updatedMaterial->stock} / {$updatedMaterial->signal_point}) setelah pembaruan analitik. Segera pesan ulang {$updatedMaterial->replenish_quantity} unit.",
+                        'message' => "STOK HABIS: Stok {$updatedMaterial->name} kritis ({$updatedMaterial->stock} {$updatedMaterial->stock_unit} / {$updatedMaterial->signal_point} {$updatedMaterial->stock_unit}) setelah pembaruan analitik. Segera pesan ulang {$updatedMaterial->replenish_quantity} {$updatedMaterial->stock_unit}.",
                     ]
                 );
                 $notificationsTriggered++;
-                Log::info("InventoryAnalyticsService: JIT Notification triggered for {$updatedMaterial->name}.");
+                Log::info("InventoryAnalyticsService: JIT Notification triggered for {$updatedMaterial->name}. Stock: {$updatedMaterial->stock}, Signal: {$updatedMaterial->signal_point}");
+            } else {
+                 Log::info("InventoryAnalyticsService: JIT Notification NOT triggered for {$updatedMaterial->name}. Stock: {$updatedMaterial->stock}, Signal: {$updatedMaterial->signal_point}");
             }
         }
 
